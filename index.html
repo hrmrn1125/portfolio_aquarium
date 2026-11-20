@@ -64,6 +64,53 @@ dd{margin:0}
  .lead,#station-copy{margin:10px 0 15px}
  nav button{min-height:46px}
 }
+
+/* Let the environment fill the screen. Keep the route and the guide within thumb reach. */
+:root{--bg:#241e39;--button:#fff4dd;--button-ink:#392946;--accent:#ffe5ad}
+[data-theme=aquarium]{--bg:#020c16;--button:#ddfff5;--button-ink:#082e35;--accent:#9efbdb}
+main{min-height:100svh;align-items:end;padding:88px clamp(22px,6vw,96px) clamp(112px,17vh,154px);touch-action:pan-y}
+[data-theme=aquarium] main{touch-action:pinch-zoom}
+canvas{pointer-events:none}
+.veil,[data-theme=aquarium] .veil{background:linear-gradient(0deg,#151128ec,transparent 37%),linear-gradient(90deg,#1b142e96,transparent 62%)}
+[data-theme=aquarium] .veil{background:linear-gradient(0deg,#020a15ed,transparent 43%),linear-gradient(90deg,#020b199e,transparent 67%)}
+header{border:0;align-items:center}
+header a{opacity:.86;text-decoration:none}
+.wordmark{font-size:1rem}
+.mark{width:32px;height:32px}
+.intro,.station{max-width:530px}
+.intro h1{font-size:clamp(3.2rem,7vw,6.6rem)}
+.station h2{font-size:clamp(2.4rem,5.2vw,4.5rem)}
+.eyebrow{margin:0 0 8px;letter-spacing:.17em}
+.lead{font-size:1rem;margin:13px 0 20px}
+#catalog{display:inline-flex;align-items:center;gap:18px;margin-top:17px;padding:.62rem 1rem .62rem 1.15rem}
+.catalog-icon{font-size:1.1rem;font-weight:400}
+.navigation{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:5px;padding:4px;border:1px solid var(--line);border-radius:100px;background:#171029ba;backdrop-filter:blur(18px);width:max-content;max-width:calc(100% - 16px)}
+[data-theme=aquarium] .navigation{background:#021523ce}
+.navigation nav{position:static;display:flex;gap:2px}
+.navigation button,.navigation nav button,[data-theme=aquarium] .navigation nav button{border:0;border-radius:100px;min-height:42px;padding:0 clamp(8px,2vw,16px);background:none;font-size:.875rem}
+.navigation > button{font-size:1.45rem;font-family:system-ui;line-height:1;min-width:42px;padding:0}
+.navigation > button:disabled{opacity:.25;cursor:default}
+.navigation nav button[aria-current=true],[data-theme=aquarium] .navigation nav button[aria-current=true]{background:var(--button);color:var(--button-ink)}
+.gesture{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(max(18px,env(safe-area-inset-bottom)) + 49px);font-size:.8rem;color:var(--soft);white-space:nowrap;pointer-events:none}
+.depth{position:absolute;right:clamp(22px,5vw,70px);top:76px;font:500 .85rem ui-monospace,monospace;letter-spacing:.16em;color:var(--accent);text-shadow:0 1px 12px #00101e}
+@media(max-width:650px){
+ main{padding:80px 20px max(114px,calc(env(safe-area-inset-bottom) + 100px))}
+ .intro h1{font-size:clamp(2.5rem,12vw,4.3rem)}
+ .station h2{font-size:clamp(2.05rem,9vw,3.4rem)}
+ .lead{margin:9px 0 15px}
+ .veil,[data-theme=aquarium] .veil{background:linear-gradient(0deg,var(--bg) 4%,transparent 65%)}
+}
+@media(max-width:340px){.navigation nav button,[data-theme=aquarium] .navigation nav button{padding-inline:6px}.navigation>button{min-width:36px}}
+header{text-shadow:0 1px 10px #1d18348f}
+@media(max-width:650px){
+ [data-theme=zoo] header{background:linear-gradient(#33214469,transparent)}
+}
+@media(max-height:500px) and (orientation:landscape){
+ main{padding-top:66px;padding-bottom:78px}
+ .intro h1{font-size:2.55rem}
+ .station h2{font-size:2.15rem}
+ .gesture{display:none}
+}
 </style>
 <main>
   <canvas id="world" aria-hidden="true"></canvas>
@@ -81,10 +128,15 @@ dd{margin:0}
   <section class="station" id="station" hidden aria-live="polite">
     <p class="eyebrow" id="guide"></p>
     <h2 id="station-title" tabindex="-1"></h2>
-    <p id="station-copy"></p>
-    <button id="catalog" class="primary">一覧を見る</button>
+    <button id="catalog" class="primary"><span class="catalog-label"></span><span class="catalog-icon" aria-hidden="true">＋</span></button>
   </section>
-  <nav id="zones" aria-label="ゾーン" hidden></nav>
+  <div class="navigation" id="navigation" hidden>
+    <button id="prev" aria-label="前のゾーン">‹</button>
+    <nav id="zones" aria-label="ゾーン"></nav>
+    <button id="next" aria-label="次のゾーン">›</button>
+  </div>
+  <p id="gesture" class="gesture" hidden></p>
+  <span id="depth" class="depth" hidden aria-hidden="true"></span>
   <noscript><p class="no-js"><a href="https://hrmrn1125.github.io/haraport/">元のポートフォリオで作品を見る</a></p></noscript>
 </main>
 <dialog id="modal" aria-labelledby="modal-title">
@@ -97,17 +149,17 @@ dd{margin:0}
 const $ = id => document.getElementById(id);
 const sea = document.documentElement.dataset.theme === 'aquarium';
 const zones = (sea ? [
-  ['Web / UI','浅瀬の回廊','ハナビラフィッシュ','サイトやWebアプリの制作実績を、光の差す浅瀬から。',0],
-  ['App','サンゴの庭','ミナモエイ','アプリの画面設計や、使い方を考えた作品へ。',18],
-  ['Graphic','薄明の礁','ヒカリクラゲ','ロゴやグラフィックなど、形と色で伝える作品へ。',85],
-  ['CX','発光の海溝','ランタンフィッシュ','AIチャットボットの会話設計と開発を紹介します。',420],
-  ['Career','深海の記憶','ツキノクジラ','人材営業から制作、そして会話設計へ。これまでの仕事をたどります。',1200]
+  ['Web / UI','浅瀬の回廊','ハナビラフィッシュ',0],
+  ['App','サンゴの庭','ミナモエイ',18],
+  ['Graphic','薄明の礁','ヒカリクラゲ',85],
+  ['CX','発光の海溝','ランタンフィッシュ',420],
+  ['Career','深海の記憶','ツキノクジラ',1200]
 ] : [
-  ['Web / UI','ユニコーンの森','ルル・ユニコーン','木漏れ日の下で、WebサイトやWebアプリの制作実績を紹介します。'],
-  ['App','羽うさぎの庭','ミモ・ウィングラビット','アプリの画面と、使いやすさを考えたデザインを集めました。'],
-  ['Graphic','花角の温室','フロル・ブルームディア','ロゴやグラフィックなど、形と色で伝える作品の温室です。'],
-  ['CX','星狐の神殿','ノア・スターキツネ','AIチャットボットの会話設計と開発を紹介します。'],
-  ['Career','月竜の丘','ネム・ムーンドラゴン','人材営業から制作、そして会話設計へ。これまでの仕事をたどります。']
+  ['Web / UI','ユニコーンの森','ルル・ユニコーン'],
+  ['App','羽うさぎの庭','ミモ・ウィングラビット'],
+  ['Graphic','花角の温室','フロル・ブルームディア'],
+  ['CX','星狐の神殿','ノア・スターキツネ'],
+  ['Career','月竜の丘','ネム・ムーンドラゴン']
 ]);
 const labels = ['Web','App','Graphic','CX','経歴'];
 const works = JSON.parse($('data').textContent);
@@ -123,6 +175,7 @@ let active = -1;
 let selectedWorkButton;
 const navButtons = zones.map((zone, index) => {
   const button = make('button', labels[index]);
+  button.title = zone[1];
   button.addEventListener('click', () => go(index));
   $('zones').append(button);
   return button;
@@ -131,18 +184,24 @@ function go(index, focus = false) {
   active = index;
   selectCamera(index);
   $('intro').hidden = index !== -1;
-  $('station').hidden = $('zones').hidden = index === -1;
+  $('station').hidden = $('navigation').hidden = index === -1;
+  $('gesture').hidden = index !== 0;
+  $('depth').hidden = !sea || index === -1;
   if (index === -1) {
     $('enter').focus({preventScroll:true});
     return;
   }
-  const [category,title,guide,copy,depth] = zones[index];
-  $('guide').textContent = sea ? `水深 ${depth} m / ${guide}` : guide;
+  const [category,title,guide] = zones[index];
+  $('guide').textContent = guide;
   $('station-title').textContent = title;
-  $('station-copy').textContent = copy;
-  $('catalog').textContent = `${labels[index]}を見る（${works.filter(work => work.category === category).length}件）`;
+  const itemCount = works.filter(work => work.category === category).length;
+  const noun = category === 'Career' ? '経歴' : '作品';
+  $('catalog').querySelector('.catalog-label').textContent = noun + 'を見る';
+  $('catalog').setAttribute('aria-label', title + 'の' + noun + 'を見る（' + itemCount + '件）');
+  $('prev').disabled = index === 0;
+  $('next').disabled = index === zones.length - 1;
   navButtons.forEach((button, position) => button.setAttribute('aria-current', String(index === position)));
-  if (focus) $('station-title').focus({preventScroll:true});
+  if (focus || document.activeElement?.disabled) $('station-title').focus({preventScroll:true});
 }
 function heading(title) {
   const h = make('h2', title);
@@ -250,6 +309,52 @@ $('modal').addEventListener('click', event => {
   if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) $('modal').close();
 });
 $('modal').addEventListener('close', () => $('catalog').focus({preventScroll:true}));
+$('gesture').textContent = sea ? '上にスワイプして深く潜る' : '左にスワイプして次の庭へ';
+function step(direction) {
+  const next = active + direction;
+  if (active >= 0 && next >= 0 && next < zones.length && !$('modal').open) go(next);
+}
+$('prev').addEventListener('click', () => step(-1));
+$('next').addEventListener('click', () => step(1));
+document.addEventListener('keydown', event => {
+  if (active < 0 || $('modal').open || event.altKey || event.ctrlKey || event.metaKey) return;
+  const direction = {ArrowRight:1, ArrowLeft:-1, ...(sea && {ArrowDown:1, ArrowUp:-1})}[event.key];
+  if (!direction) return;
+  event.preventDefault();
+  step(direction);
+});
+const worldSurface = document.querySelector('main');
+let gestureStart;
+let guideArea;
+worldSurface.addEventListener('pointerdown', event => {
+  if (!event.isPrimary || event.button !== 0 || event.target.closest('button,a')) return;
+  gestureStart = {id:event.pointerId, x:event.clientX, y:event.clientY};
+  worldSurface.setPointerCapture(event.pointerId);
+});
+worldSurface.addEventListener('pointerup', event => {
+  if (gestureStart?.id !== event.pointerId) return;
+  const dx = event.clientX - gestureStart.x;
+  const dy = event.clientY - gestureStart.y;
+  gestureStart = undefined;
+  if (Math.abs(dx) < 12 && Math.abs(dy) < 12 && active >= 0 && guideArea) {
+    const {x,y,radius}=guideArea;
+    const bounds=canvas.getBoundingClientRect();
+    if (Math.hypot(event.clientX-bounds.left-x,event.clientY-bounds.top-y) < radius) catalog();
+    return;
+  }
+  if (Math.abs(dx) < 48 && Math.abs(dy) < 48) return;
+  if (Math.abs(dx) > Math.abs(dy)) step(Math.sign(-dx));
+  else if (sea) step(Math.sign(-dy));
+});
+worldSurface.addEventListener('pointercancel', () => {gestureStart = undefined;});
+worldSurface.addEventListener('pointermove', event => {
+  if (event.pointerType !== 'mouse') return;
+  const bounds=worldSurface.getBoundingClientRect();
+  const onGuide=guideArea && !event.target.closest('button,a') &&
+    Math.hypot(event.clientX-bounds.left-guideArea.x,event.clientY-bounds.top-guideArea.y)<guideArea.radius;
+  worldSurface.style.cursor=onGuide?'pointer':'';
+});
+
 
 // A single world in XYZ coordinates. Positions are projected through a moving
 // perspective camera, including the zones that are outside the current view.
@@ -266,17 +371,26 @@ const mobile = () => innerWidth <= 650;
 function waypoint(index) {
   const [x,y,z] = positions[Math.max(index,0)];
   const intro = index < 0;
-  return {eye:[x-2.2,y+(intro?4.6:3.1),z+(intro?13:9.7)],look:[x,y+1.0,z-1.5],depth:Math.max(index,0)/4};
+  const side = Math.max(index,0)%2 ? 2.6 : -2.4;
+  return {
+    eye:[x+side,y+(intro?2.1:sea?1.35:3.1),z+(intro?12:sea?7.7:9.7)],
+    look:[x,y+.33,z-.4],
+    depth:Math.max(index,0)/4,
+    meters:sea && !intro ? zones[index][3] : 0
+  };
 }
 let target = waypoint(-1);
 let current = target;
 let start = current;
-let started = 0;
+let started = -10000;
+let duration = 1;
 let width = 0, height = 0;
 function selectCamera(index) {
   start = current;
   target = waypoint(index);
   started = performance.now();
+  const distance=length(vector(target.eye,start.eye));
+  duration = sea ? Math.min(3900,1250+distance*25) : Math.min(2350,850+distance*11);
   if (motion.matches) current = target;
   if (ctx) restart();
 }
@@ -287,119 +401,6 @@ function random(seed) {
     return value / 4294967296;
   };
 }
-const shapes = [];
-const particles = [];
-const pearl = [255,233,248], gold = [255,209,135], blush = [231,129,193];
-const palettes = sea ? [[83,239,201],[109,180,245],[176,142,244],[94,249,216],[117,155,239]]
-                     : [[217,148,221],[147,213,181],[235,163,140],[158,135,225],[135,179,229]];
-function populate(center, index) {
-  const [x,y,z] = center;
-  const rand = random(421+index*58);
-  const accent = palettes[index];
-  const orb = (px,py,pz,rx,ry,color,angle=0, animated=false, glow=false) =>
-    shapes.push({p:[x+px,y+py,z+pz],rx,ry,color,angle,animated,glow,index});
-  const polygon = (vertices,color) => shapes.push({vertices:vertices.map(([px,py,pz])=>[x+px,y+py,z+pz]),color,index});
-  const ring = (r,h,tilt) => {
-    const points = Array.from({length:33},(_,i)=>{
-      const angle = i*Math.PI/16;
-      return [x+Math.cos(angle)*r,y+h+Math.sin(angle)*tilt,z+Math.sin(angle)*r];
-    });
-    shapes.push({points,color:accent,index});
-  };
-  for (let island=0;island<4;island++) {
-    const side = island === 0 ? 0 : (island%2 ? -1 : 1) * (4.8+rand()*2);
-    const back = island === 0 ? 0 : -1.5-island*2.5;
-    const level = island === 0 ? 0 : rand()*1.2-1.1;
-    const radius = island === 0 ? 3.75 : 1+rand()*1.2;
-    const edge = Array.from({length:10},(_,j)=>{
-      const angle = j*Math.PI/5, stretch = radius*(.88+rand()*.22);
-      return [side+Math.cos(angle)*stretch,level,back+Math.sin(angle)*stretch];
-    });
-    edge.forEach((point,j) => {
-      const next = edge[(j+1)%edge.length];
-      const face = [.66,.82,1,.91,.75][j%5];
-      polygon([point,next,[side+.42,level-radius*.85,back-.35]],mix(sea?[20,34,76]:[78,53,122],accent,.26*face));
-      polygon([point,next,[side,level+.15,back]],mix(sea?[21,68,86]:[99,100,155],accent,.45*face));
-    });
-    for (let j=0;j<21;j++) {
-      const angle = rand()*Math.PI*2;
-      const r = Math.sqrt(rand())*radius*.89;
-      const px=side+Math.cos(angle)*r, pz=back+Math.sin(angle)*r;
-      if (!island && Math.abs(px)<1.6 && pz>-.8) continue;
-      const size=.10+rand()*.43;
-      orb(px,level+size*.65,pz,size*(sea?.60:.85),size*1.25,j%3?accent:(sea?[101,201,181]:gold),rand()-.5,false,sea);
-      if (j%3===0) orb(px,level+size*1.7,pz,size*.34,size*.34,sea?[159,254,227]:pearl,0,false,true);
-    }
-  }
-  ring(4.15,sea?.48:.15,sea?.42:0);
-  ring(4.60,sea?.48:.15,sea?.42:0);
-  for(let j=0;j<17;j++){
-    const angle=rand()*Math.PI*2, r=2.38+rand()*1.25;
-    const px=Math.cos(angle)*r,pz=Math.sin(angle)*r;
-    if (pz>1 && Math.abs(px)<1.7) continue;
-    const h=.45+rand()*1.2;
-    if(sea){
-      for(let k=0;k<3;k++) orb(px+k*.18,h*(.37+k*.08),pz,.10,h*.66,accent,(k-1)*.53,false,true);
-    } else {
-      orb(px,h*.45,pz,.09,h*.5,[116,78,137]);
-      orb(px,h,pz,.39,h*.43,j%2?accent:[143,174,203],rand()-.5);
-      orb(px+.19,h+.29,pz,.22,.29,pearl,.34);
-    }
-  }
-  for(let j=0;j<56;j++) particles.push({p:[x+(rand()-.5)*23,y+(rand()-.25)*12,z+(rand()-.5)*21],size:.012+rand()*.040,phase:rand()*7,index});
-  const pet = (px,py,pz,rx,ry,color,angle=0,glow=false)=>orb(px,py+(sea?1.18:0),pz,rx,ry,color,angle,true,glow);
-  if (sea) {
-    const [a,b] = index===2?[.59,.63]:index===4?[1.58,.58]:[1.04,.52];
-    const top = index===2?2.0:1.35;
-    if(index===2) {
-      for(let j=0;j<7;j++) pet((j-3)*.15,top-1.19,.14,.045,.59+j*.033,j%2?accent:pearl,(j-3)*.14,true);
-    } else {
-      pet(-a*.93,top,.04,.31,index===4?.31:.46,accent,-.64,true);
-      pet(-a*.99,top+.52,.04,.21,.40,accent,-.58,true);
-      pet(-.24,top-.39,.13,.39,.12,[82,151,215],-.47,true);
-      pet(-.05,top+.43,.05,index===1?.71:.35,.15,accent,-.41,true);
-    }
-    pet(0,top,.19,a,b,accent,-.11,true);
-    pet(.15,top+.045,.32,a*.78,b*.67,mix(accent,[240,252,251],.44),-.11,true);
-    pet(a*.55,top+.066,.75,.11,.13,[12,32,69]);
-    pet(a*.56,top+.10,.81,.036,.052,[245,255,255]);
-    if(index===3) {
-      pet(.62,top+.63,.23,.053,.55,accent,.49,true);
-      pet(.91,top+1.04,.23,.20,.20,[248,252,170],0,true);
-    }
-    if(index===1) pet(-.37,top-.28,.42,.72,.18,[115,218,237],.36,true);
-  } else {
-    const body = index===0?pearl:mix(pearl,accent,.39);
-    pet(-.43,.96,-.10,.63,.47,body,-.08);
-    for(let j=0;j<4;j++) {
-      pet(-.93+j*.37,.47,j%2?.30:.07,.14,.39,body,-.13);
-      pet(-.93+j*.37,.18,j%2?.35:.11,.145,.10,accent);
-    }
-    pet(-1.04,.98,.04,.27,.54,accent,-.59);
-    pet(-1.28,1.25,.03,.19,.43,blush,-.43);
-    pet(.16,1.24,.16,.33,.51,body,.29);
-    for(let j=0;j<4;j++) pet(.30-j*.13,1.67-j*.20,.25,.23,.37,j%2?accent:blush,-.35);
-    pet(.52,1.70,.34,.51,.47,body,-.25);
-    pet(.83,1.51,.48,.38,.265,body,-.14);
-    const long = index===1?.55:.24;
-    pet(.26,2.0+long*.44,.18,.125,long,body,-.27);
-    pet(.53,2.02+long*.45,.34,.13,long,body,.30);
-    pet(.54,2.03+long*.45,.41,.066,long*.72,blush,.30);
-    if(index===0 || index===2 || index===4){
-      polygon([[.75,1.98,.25],[.98,2.65,.25],[.93,1.96,.25]],gold);
-      pet(.977,2.64,.22,.052,.052,gold,0,true);
-    }
-    if(index===1 || index===4){
-      pet(-.69,1.35,.46,.57,.23,accent,.57);
-      pet(-.81,1.48,.45,.49,.16,pearl,.67);
-    }
-    pet(.57,1.72,.67,.087,.112,[51,35,72]);
-    pet(.59,1.75,.71,.029,.038,[255,255,255]);
-    pet(.80,1.62,.64,.105,.056,[243,156,184]);
-    pet(1.04,1.56,.59,.038,.031,[122,78,133]);
-  }
-}
-positions.forEach(populate);
 const dot = (x,y,size,color) => {
   ctx.fillStyle = color;
   ctx.beginPath();
@@ -411,6 +412,497 @@ const length = a => Math.hypot(...a);
 const unit = a => a.map(v=>v/length(a));
 const inner = (a,b) => a.reduce((sum,v,i)=>sum+v*b[i],0);
 const cross = ([a,b,c],[x,y,z]) => [b*z-c*y,c*x-a*z,a*y-b*x];
+const grain=document.createElement('canvas');
+grain.width=grain.height=160;
+const grainContext=grain.getContext('2d');
+let grainPattern;
+if(ctx && grainContext){
+  const pixels=grainContext.createImageData(160,160);
+  const rand=random(81375);
+  for(let i=0;i<pixels.data.length;i+=4){
+    const tone=rand()>.46?255:0;
+    pixels.data[i]=pixels.data[i+1]=pixels.data[i+2]=tone;
+    pixels.data[i+3]=Math.floor(rand()*31);
+  }
+  grainContext.putImageData(pixels,0,0);
+  grainPattern=ctx.createPattern(grain,'repeat');
+}
+function finishScene(){
+  if(grainPattern){
+    ctx.save();
+    ctx.globalAlpha=sea?.17:.42;
+    ctx.fillStyle=grainPattern;
+    ctx.fillRect(0,0,width,height);
+    ctx.restore();
+  }
+  if(!guideArea) return;
+  const x=guideArea.x+guideArea.radius*.82;
+  const y=guideArea.y+guideArea.radius*.16;
+  dot(x,y,13,sea?'#0b3b4a99':'#352542b0');
+  ctx.strokeStyle=sea?'#cefff1cb':'#fff1d7dc';
+  ctx.lineWidth=1.15;
+  ctx.beginPath();
+  ctx.arc(x,y,13,0,Math.PI*2);
+  ctx.moveTo(x-4,y);
+  ctx.lineTo(x+4,y);
+  ctx.moveTo(x,y-4);
+  ctx.lineTo(x,y+4);
+  ctx.stroke();
+}
+// Illustrated scenery and character cels. The camera moves each layer at its own speed.
+const zooColors = [
+  ['#dcaec4','#f6d6b4','#8c668a','#586d65','#dd9cba','#c998d1'],
+  ['#b8ceb8','#f7dbad','#7b9c83','#516f62','#f2bd80','#f3ac93'],
+  ['#f2b9ae','#f9ddbd','#a67585','#635f78','#f7bc9b','#dc8d88'],
+  ['#938db9','#e8b1af','#746585','#4f4d73','#ebbe9d','#e9a780'],
+  ['#797fa8','#cbaaac','#615c85','#3b456a','#aaaccf','#92adca']
+];
+const ink = '#4e3555';
+function paint(path, fill, stroke, thickness = 1.3) {
+  const shape = new Path2D(path);
+  if (fill) {
+    ctx.fillStyle = fill;
+    ctx.fill(shape);
+  }
+  if (stroke) {
+    ctx.lineWidth = thickness;
+    ctx.lineJoin = ctx.lineCap = 'round';
+    ctx.strokeStyle = stroke;
+    ctx.stroke(shape);
+  }
+}
+function ellipse(x,y,rx,ry,fill,angle=0) {
+  ctx.beginPath();
+  ctx.ellipse(x,y,rx,ry,angle,0,Math.PI*2);
+  ctx.fillStyle=fill;
+  ctx.fill();
+}
+function star(x,y,size,color) {
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(size,size);
+  paint('M0 -1 Q.16 -.17 1 0 Q.18 .16 0 1 Q-.15 .19 -1 0 Q-.16 -.16 0 -1Z',color);
+  ctx.restore();
+}
+function drawCreature(index, x, y, scale, clock) {
+  const accent=zooColors[index][5];
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(scale,scale);
+  ellipse(0,65,99,13,'#32274738');
+  ctx.translate(0,Math.sin(clock*1.8)*2);
+  const paper='#fff0dc', cream='#fff6ea';
+  if(index===0){
+    paint('M69 23 C115 6 123 28 111 43 C105 53 116 49 125 42 C129 64 101 73 87 59 C79 49 82 35 69 42Z',accent,ink);
+    paint('M-47 29 C-52 39 -47 57 -49 64 L-34 64 L-30 35 M47 33 L46 62 L61 62 L65 29','#e6d3d8',ink);
+    paint('M-54 -52 C-41 -68 -21 -55 -19 -38 C-14 -15 6 -12 31 -15 C68 -19 87 2 83 26 Q79 44 67 47 L64 63 Q61 70 48 65 L46 45 Q13 53 -21 42 L-24 66 Q-29 72 -42 66 L-42 38 Q-63 27 -62 3 Q-60 -20 -69 -27Z',cream,ink,1.7);
+    paint('M-51 -59 Q-59 -80 -45 -87 Q-31 -81 -34 -60Z',paper,ink);
+    paint('M-80 -61 Q-95 -88 -96 -105 Q-76 -94 -68 -67Z','#f3ce85',ink);
+    paint('M-91 -92 L-84 -94 M-88 -82 L-79 -85 M-84 -74 L-74 -78',null,'#b98b62',1);
+    paint('M-52 -64 C-41 -67 -24 -61 -22 -45 C-19 -29 -22 -23 -8 -16 C8 -8 -8 7 -23 -1 C-31 12 -45 -5 -39 -18 C-51 -26 -37 -49 -52 -51Z',accent,ink,1.7);
+    paint('M-50 -63 Q-58 -79 -76 -72 Q-83 -67 -88 -58 Q-100 -59 -104 -46 C-108 -30 -84 -21 -68 -27 Q-57 -31 -55 -43Z',cream,ink,1.7);
+    paint('M-55 -60 Q-64 -80 -79 -74 Q-87 -71 -87 -65 Q-81 -58 -68 -63 Q-73 -55 -83 -55 Q-69 -47 -55 -60Z','#bf8acb',ink);
+    paint('M-83 -46 Q-79 -40 -73 -46 M-82 -44 L-85 -42 M-43 59 L-25 59 M47 58 L64 58',null,ink);
+    ellipse(-74,-38,6,3,'#eca4ad');
+    star(26,8,8,'#ddabbe');
+    star(39,17,4,'#db9bb0');
+  }else if(index===1){
+    paint('M16 10 Q25 -34 72 -44 Q67 -29 50 -17 Q72 -27 87 -19 Q72 6 45 15Z','#f9cfad',ink,1.6);
+    paint('M22 10 Q46 -12 70 -18',null,'#b76c75');
+    ellipse(18,35,53,32,'#f9e2d6');
+    paint('M-28 -25 Q-54 -82 -41 -98 Q-21 -108 -12 -45 Q-14 -91 4 -96 Q24 -96 8 -33',cream,ink,1.7);
+    paint('M-25 -44 Q-40 -67 -38 -86 M-2 -48 Q8 -75 7 -85',null,'#df9ca7',3);
+    paint('M-40 -35 Q-12 -48 10 -26 C38 1 17 36 -20 34 Q-49 30 -55 9 Q-59 -19 -40 -35Z',cream,ink,1.7);
+    paint('M-39 1 Q-34 6 -29 1 M-47 10 Q-43 14 -39 10 M30 57 Q43 44 55 51 Q61 59 50 63 L26 63',null,ink,1.5);
+    ellipse(-23,10,7,3,'#eaa2a8');
+    ellipse(68,29,12,12,cream);
+    star(30,-3,5,'#f3a07e');
+  }else if(index===2){
+    paint('M-22 29 L-27 65 L-11 65 L-5 37 M51 33 L57 64 L70 64 L67 32 M69 22 Q87 -2 94 12 Q87 28 74 31','#b87b80',ink);
+    paint('M-49 -37 Q-34 -40 -28 -13 Q-23 8 16 -1 C52 -17 79 2 78 24 Q76 52 34 51 L27 66 L16 66 L18 46 Q-14 42 -29 33 L-36 66 L-48 65 L-47 25 Q-55 11 -55 -10Z','#e4a78c',ink,1.6);
+    paint('M-51 -48 Q-32 -55 -19 -45 L-33 -31 Q-61 -8 -82 -24 Q-89 -30 -83 -41Z','#f8d3b7',ink,1.6);
+    paint('M-48 -45 Q-53 -71 -67 -83 M-48 -54 Q-36 -73 -41 -89 M-52 -59 L-68 -63 M-45 -63 L-30 -72',null,ink,2);
+    for(const [fx,fy] of [[-67,-83],[-41,-89],[-68,-63],[-30,-72]]) flower(fx,fy,4,'#f3bbaf','#f6de9c');
+    paint('M-69 -34 Q-65 -29 -60 -35',null,ink,1.5);
+    for(const [fx,fy] of [[13,13],[25,8],[36,14],[46,10],[54,19],[21,24],[32,25]]) ellipse(fx,fy,2.2,1.8,'#fff0d1');
+  }else if(index===3){
+    paint('M31 42 Q61 33 68 10 Q84 -33 112 -24 Q111 14 91 39 Q76 61 38 58Z','#ca826f',ink,1.7);
+    paint('M88 -12 Q103 -25 112 -24 Q111 -4 103 12 Q87 15 88 -12Z','#fff2df',ink);
+    paint('M-36 11 Q-11 -9 15 1 Q58 14 49 47 Q39 69 -20 63 Q-54 61 -52 44Z','#e1a185',ink,1.7);
+    paint('M-67 -24 L-73 -63 Q-51 -56 -41 -38 Q-19 -48 -5 -49 L-7 -18 Q17 7 -22 30 Q-43 42 -64 19 L-83 5Z','#e1a185',ink,1.7);
+    paint('M-67 -26 L-68 -53 L-51 -34 M-20 -36 L-9 -44 L-12 -22',null,'#92586b',2);
+    paint('M-77 0 Q-65 -17 -43 2 Q-21 -10 -13 -7 Q-1 12 -32 26 Q-53 31 -77 8Z','#fff0dc',ink);
+    paint('M-62 0 Q-58 5 -53 1 M-35 -1 Q-31 4 -27 -1',null,ink,1.5);
+    star(-43,-17,7,'#ffe9a7');
+    star(77,28,6,'#ffe1a0');
+  } else {
+    paint('M22 38 Q76 16 92 36 Q107 57 120 43 Q122 71 95 63 Q68 49 45 57Z','#839ab5',ink,1.7);
+    paint('M4 2 Q14 -36 56 -50 L48 -31 L67 -29 L51 -9 L53 3 Q26 0 13 16Z','#ad9bca',ink,1.7);
+    paint('M-50 8 Q-32 -5 -15 1 Q25 4 40 29 Q54 58 22 62 L-31 63 Q-62 62 -64 37Z','#86a3bf',ink,1.7);
+    paint('M-18 4 Q3 29 -7 54 Q-18 63 -37 57 Q-57 47 -54 23Z','#e4c8bb',ink);
+    paint('M-63 -29 Q-64 -50 -52 -63 Q-48 -52 -43 -40 L-35 -40 Q-29 -64 -18 -67 Q-17 -52 -22 -37 Q-3 -28 -7 -9 Q-9 18 -42 19 Q-69 19 -80 2 Q-87 -14 -63 -29Z','#9eb7cb',ink,1.7);
+    paint('M-65 -6 Q-60 -1 -55 -7 M-73 2 L-70 1 M-37 46 Q-25 39 -22 51 L-24 62',null,ink,1.5);
+    ellipse(-56,4,7,3,'#e4a2b2');
+    star(-27,-19,7,'#fff1ba');
+  }
+  ctx.restore();
+}
+
+function flower(x,y,r,petal,center) {
+  for(let i=0;i<5;i++){
+    const a=i*Math.PI*.4;
+    ellipse(x+Math.cos(a)*r*.78,y+Math.sin(a)*r*.78,r*.7,r*.53,petal,a);
+  }
+  ellipse(x,y,r*.48,r*.48,center);
+}
+
+function grove(x,y,size,color,seed) {
+  const rnd=random(seed);
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(size,size);
+  paint('M-9 0 Q-2 -57 -9 -116 Q-20 -160 -34 -192 Q-19 -187 -3 -150 Q4 -177 1 -217 L8 -219 Q16 -172 10 -138 Q25 -162 49 -173 L52 -166 Q26 -149 14 -113 Q9 -53 20 0Z',color);
+  for(let i=0;i<20;i++) {
+    const a=rnd()*Math.PI*2,r=Math.sqrt(rnd());
+    const px=Math.cos(a)*69*r,py=-177+Math.sin(a)*61*r;
+    ellipse(px,py,21+rnd()*25,16+rnd()*24,color,rnd());
+  }
+  ctx.globalAlpha*=.55;
+  if(size>.5){
+    for(let i=0;i<17;i++){
+      const px=(rnd()-.5)*126,py=-178+(rnd()-.5)*90;
+      paint(`M${px} ${py} q5 -7 11 -4 q-3 6 -11 4Z`,'#c6a3a25c');
+    }
+  }
+  ctx.restore();
+}
+
+function drawZoo(time, motionPhase, displacement) {
+  const index=Math.max(0,Math.min(4,Math.round(current.depth*4)));
+  const floor=Math.floor(current.depth*4);
+  const blend=current.depth*4-floor;
+  const channel = hex => [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+  const color = i=>rgb(mix(channel(zooColors[floor][i]),channel(zooColors[Math.min(4,floor+1)][i]),blend));
+  const H=height,W=width;
+  const phone=mobile();
+  const center=W*(phone?.54:.64);
+  const horizon=H*(phone?.50:.57);
+  const drift=(current.eye[0]+current.eye[2]*.55)*.013;
+  const sky=ctx.createLinearGradient(0,0,W*.26,H);
+  sky.addColorStop(0,color(0));
+  sky.addColorStop(.58,color(1));
+  sky.addColorStop(1,color(2));
+  ctx.fillStyle=sky;
+  ctx.fillRect(0,0,W,H);
+  const sunX=W*.65+Math.sin(drift)*W*.12;
+  const sunY=H*.25;
+  const moon=Math.min(W,H)*.11;
+  const sun=ctx.createRadialGradient(sunX,sunY,moon*.65,sunX,sunY,moon*3);
+  sun.addColorStop(0,'#fff2cb9f');
+  sun.addColorStop(1,'#fff1cf00');
+  ctx.fillStyle=sun;
+  ctx.fillRect(0,0,W,H);
+  ellipse(sunX,sunY,moon,moon,'#fff1c8dc');
+  for(let layer=0;layer<3;layer++){
+    const stretch=(layer+1)*.22;
+    const y=horizon+(layer-1)*H*.075;
+    const shift=Math.sin(drift*(layer+1))*W*.13+displacement*stretch;
+    ctx.globalAlpha=.35+layer*.20;
+    ctx.fillStyle=color(layer===2?3:2);
+    ctx.beginPath();
+    ctx.moveTo(-W,y);
+    for(let i=-4;i<13;i++){
+      const x=i*W*.23+shift;
+      const h=H*(.06+.09*(.5+.5*Math.sin(i*2.5+layer)));
+      ctx.quadraticCurveTo(x+W*.11,y-h,x+W*.23,y);
+    }
+    ctx.lineTo(W*3,H);
+    ctx.lineTo(-W,H);
+    ctx.fill();
+    for(let i=-1;i<11;i++){
+      const rnd=random(layer*800+i+61);
+      const x=i*W*.112+shift+W*.06;
+      grove(x,y+H*(.04+rnd()*.055),Math.min(W,H)/850*(.35+layer*.42)*(.62+rnd()*.63),color(layer===2?3:2),943+i);
+    }
+  }
+  ctx.globalAlpha=1;
+  const ground=ctx.createLinearGradient(0,horizon,0,H);
+  ground.addColorStop(0,color(3));
+  ground.addColorStop(1,'#302b49');
+  ctx.fillStyle=ground;
+  ctx.beginPath();
+  ctx.moveTo(0,horizon+H*.15);
+  ctx.bezierCurveTo(W*.31,horizon+H*.06,W*.64,horizon-H*.08,W,horizon+H*.05);
+  ctx.lineTo(W,H);
+  ctx.lineTo(0,H);
+  ctx.fill();
+  ctx.save();
+  ctx.translate(center+displacement*.19,horizon);
+  ctx.scale(W,H);
+  paint('M-.032 .015 C-.20 .13 .20 .18 .08 .33 L.49 .49 L.15 .55 C.28 .38 -.24 .24 -.017 .026Z','#e9c6a879');
+  ctx.restore();
+  const r=random(754+index);
+  for(let i=0;i<110;i++){
+    const x=((r()+drift*.13)%1+1)%1*W;
+    const pos=r();
+    const y=horizon+H*(.03+.40*pos);
+    const size=(.65+r()*2.1)*(1+pos*1.7);
+    const bend=(r()-.5)*size*3;
+    ctx.strokeStyle='#b9b59285';
+    ctx.lineWidth=.9;
+    ctx.beginPath();
+    ctx.moveTo(x,y+size*3);
+    ctx.quadraticCurveTo(x,y+size,x+bend,y);
+    ctx.stroke();
+    flower(x+bend,y,size,i%3===0?'#f5e3a8':color(4),'#ffdc94');
+  }
+  const scale=Math.min(W*(phone?.0038:.0020),H*.0036)*(1+.06*(active>=0));
+  const guideX=center+displacement*.37;
+  const guideY=horizon-H*(phone?.08:.125)+Math.sin(motionPhase*Math.PI)*H*.024;
+  drawCreature(index,guideX,guideY,scale,time);
+  if(active===index) guideArea={x:guideX,y:guideY-15*scale,radius:91*scale};
+  const foreground = Math.min(W,H)/(phone?795:595);
+  for (const [x,flip] of [[phone?-W*.035:W*.009,1],[phone?W*1.065:W*1.005,-1]]) {
+    ctx.save();
+    ctx.translate(x,H*.91);
+    ctx.scale(foreground*flip,foreground);
+    const angle=Math.sin(time*.47+x)*.019;
+    ctx.rotate(angle);
+    grove(-17,0,2.2,'#423452',517);
+    grove(-49,-28,1.63,'#624a66',34);
+    ctx.restore();
+  }
+  for (let i=0;i<38;i++){
+    const rnd=random(81+i);
+    const px=(rnd()*W+Math.sin(time*.30+i)*24+W)%W;
+    const py=(rnd()*H+time*(5+rnd()*8))%H;
+    const size=1+rnd()*4;
+    ctx.globalAlpha=.18+rnd()*.45;
+    if(i%5===0) star(px,py,size,'#fff6d8');
+    else ellipse(px,py,size*.46,size,'#f8d0cd',time*.8+i);
+  }
+  ctx.globalAlpha=1;
+}
+
+// Underwater scenery in world coordinates, viewed through the same moving lens as the guides.
+const reefs = [];
+const swimmers = [];
+const plankton = [];
+const oceanColors = [[132,247,211],[104,224,235],[163,180,255],[86,253,231],[131,171,255]];
+positions.forEach(([x,y,z],index) => {
+  const rand=random(812+161*index);
+  swimmers.push({p:[x,y+.65,z+.65],kind:index,size:index===4?2.25:1.52,color:oceanColors[index],phase:1,guide:true});
+  for(let i=0;i<18;i++){
+    const px=x+(rand()>.5?-1:1)*(2.5+rand()*7);
+    const py=y-2.35+rand()*1.25;
+    const pz=z+(rand()-.55)*20;
+    reefs.push({p:[px,py,pz],size:.42+rand()*1.06,seed:i+31*index,color:i%5===0?[248,134,102]:oceanColors[index]});
+  }
+  for(let i=0;i<10;i++){
+    swimmers.push({p:[x+(rand()-.5)*19,y+(rand()-.37)*8,z+(rand()-.5)*22],kind:i%4===0?2:0,size:.18+rand()*.58,color:oceanColors[(index+i)%5],phase:rand()*6,guide:false});
+  }
+  for(let i=0;i<135;i++){
+    plankton.push({p:[x+(rand()-.5)*25,y+(rand()-.5)*14,z+(rand()-.5)*27],size:.8+rand()*1.7,phase:rand()*7});
+  }
+});
+
+const fishShapes = [
+  ['M-32 1 Q-12 -27 19 -20 Q38 -14 44 0 Q35 17 13 20 Q-12 23 -32 1Z','M-29 1 Q-50 -17 -62 -16 Q-55 -6 -53 0 Q-57 9 -61 17 Q-42 13 -29 1Z','M-8 -13 Q-6 -33 18 -29 Q13 -23 13 -16 M-1 13 Q0 29 22 27 L15 14'],
+  ['M-42 8 Q-24 -16 2 -15 Q17 -12 47 -29 Q43 -2 23 12 Q9 27 -9 23 Q-25 21 -42 8Z','M-35 10 Q-51 15 -76 8 Q-86 2 -86 -4 Q-70 5 -39 3Z','M-11 13 Q2 30 24 30 Q13 24 10 15'],
+  null,
+  ['M-27 1 Q-16 -19 5 -20 Q23 -22 40 -8 L43 -2 Q33 -7 19 -1 Q34 0 42 7 Q29 25 10 26 Q-13 27 -27 1Z','M-24 2 Q-39 -12 -53 -14 L-49 1 L-54 15 Q-36 13 -24 2Z','M0 -16 Q6 -34 23 -30 L20 -17 M4 19 Q7 31 20 33 L15 20'],
+  ['M-57 4 Q-30 -22 13 -16 Q48 -17 65 -6 Q70 -1 65 8 Q57 23 13 22 Q-28 22 -57 4Z','M-49 3 Q-64 -12 -79 -9 Q-76 1 -69 5 Q-80 11 -90 9 Q-80 23 -61 14 L-50 9Z','M-5 -12 Q-4 -29 9 -25 L14 -14 M15 14 Q0 31 24 33 L37 17']
+];
+function oceanGlow(x,y,r,color,opacity){
+  const gradient=ctx.createRadialGradient(x,y,0,x,y,Math.max(r,1));
+  gradient.addColorStop(0,`rgba(${color.join(',')},${opacity})`);
+  gradient.addColorStop(.27,`rgba(${color.join(',')},${opacity*.48})`);
+  gradient.addColorStop(1,`rgba(${color.join(',')},0)`);
+  ctx.fillStyle=gradient;
+  ctx.fillRect(x-r,y-r,2*r,2*r);
+}
+
+function drawSwimmer(swimmer,point,clock,deep,showHalo) {
+  const [x,y,d,scale]=point;
+  const size=Math.min(d<1?12:3,scale*.019*swimmer.size);
+  if (size<.10 || x<-190 || x>width+190 || y<-180 || y>height+180) return;
+  const {kind,color,guide,phase}=swimmer;
+  const light=rgb(color);
+  const pulse=.78+.22*Math.sin(clock*2+phase);
+  ctx.save();
+  ctx.globalAlpha=guide?1:Math.max(.22,.75-d*.011);
+  if (showHalo) {
+    ctx.globalCompositeOperation='screen';
+    oceanGlow(x,y,size*(guide?107:62),color,(guide?.63:.29)*pulse*(.69+deep*.31));
+    ctx.globalCompositeOperation='source-over';
+  }
+  ctx.translate(x,y);
+  ctx.scale(size,size);
+  ctx.rotate(Math.sin(clock*.85+phase)*.069 + (kind===1?-.20:0));
+  if(kind===2){
+    ctx.scale(1+.08*Math.sin(clock*2+phase),1-.07*Math.sin(clock*2+phase));
+    const jelly=ctx.createLinearGradient(0,-33,0,16);
+    jelly.addColorStop(0,'#d8fff4ec');
+    jelly.addColorStop(.27,`rgba(${color.join(',')},.42)`);
+    jelly.addColorStop(.90,`rgba(${color.join(',')},.12)`);
+    jelly.addColorStop(1,light);
+    for(let i=0;i<9;i++){
+      const a=(i-4)*7;
+      const bend=Math.sin(clock*1.5+i*.66+phase)*10;
+      paint(`M${a} 10 Q${a+bend} 32 ${a*.65-bend*.45} 45 T${a*.96+bend} ${61+i%3*13}`,null,i%2?light:'#a3ffe27c',i%2?.6:1.05);
+    }
+    paint('M-34 11 C-33 -14 -17 -28 0 -30 C19 -30 33 -10 35 11 Q22 19 4 17 Q-17 21 -34 11Z',jelly,light,1.05);
+    for(let i=-2;i<=2;i++){
+      paint(`M${i*12} 13 Q${i*15} -12 0 -29`,null,'#e2fff76b',.66);
+      ellipse(i*13,14,1.8,1.1,'#e6fff7');
+    }
+  } else {
+    const [body,tail,fins]=fishShapes[kind];
+    const gradient=ctx.createLinearGradient(0,-23,0,25);
+    gradient.addColorStop(0,light);
+    gradient.addColorStop(.31,tint(color,[13,51,76],.54));
+    gradient.addColorStop(.73,tint(color,[5,25,46],.77));
+    gradient.addColorStop(1,tint(color,[5,32,57],.17));
+    ctx.save();
+    ctx.scale(1+Math.sin(clock*4+phase)*.11,1);
+    paint(tail,gradient,light,.7);
+    ctx.restore();
+    paint(fins,gradient,light,.43);
+    paint(body,gradient,light,.83);
+    const eye=kind===4?50:kind===1?23:26;
+    ellipse(eye,-3,3.9,3.5,'#042231');
+    ellipse(eye+.6,-4.2,1.35,1.18,'#c9fff6');
+    if(kind!==1) paint(`M${eye-6} 1 Q${eye-11} 7 ${eye-8} 12`,null,'#befff284',.9);
+    for(let n=0;n<11;n++){
+      const lx=(kind===4?-34:-22)+n*(kind===4?5:3.4);
+      const ly=4+Math.sin(n*.36)*4;
+      ellipse(lx,ly,.6+(n%3)*.18,.64,n%3===0?'#c6fff4':light);
+      if(guide)ellipse(lx+1,ly-6,.58,.58,'#c6fff478');
+    }
+    if(kind===3){
+      paint('M17 -16 Q16 -47 32 -53 Q49 -56 50 -39',null,light,1);
+      oceanGlow(50,-38,20,color,.96*pulse);
+      ellipse(50,-38,3.6,3.6,'#dcfff5');
+    }
+  }
+  ctx.restore();
+}
+
+function drawReef(reef,point,clock,deep){
+  const [x,y,d,s]=point;
+  const size=Math.min(8,s*.015*reef.size);
+  if(size<.17 || x<-190 || x>width+190 || y<-140 || y>height+180) return;
+  const rand=random(reef.seed);
+  const color=reef.color;
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(size,size);
+  const rock=ctx.createLinearGradient(0,-30,0,20);
+  rock.addColorStop(0,tint(color,[10,26,48],.76));
+  rock.addColorStop(1,'#061421');
+  paint('M-48 7 Q-42 -8 -32 -8 L-23 -25 L-6 -26 L6 -20 L22 -19 L31 -7 Q43 -3 52 13 L42 26 L-39 22Z',rock);
+  for(let j=0;j<8;j++){
+    const stem=(rand()-.5)*52;
+    const lean=(rand()-.5)*42+Math.sin(clock+j+reef.seed)*4;
+    const length=16+rand()*48;
+    const hue=tint(color,[8,45,62],.59-deep*.22);
+    const tip=stem+lean;
+    paint(`M${stem} 6 Q${stem-lean*.26} ${-length*.69} ${tip} ${-length}`,null,hue,.8+rand()*1.4);
+    if(j%2===0)paint(`M${stem+lean*.1} ${-length*.51} Q${stem+lean*.34+13} ${-length*.62} ${tip+8} ${-length*.79}`,null,hue,.87);
+    if(d<28 && j%2===0) oceanGlow(tip,-length,7,color,.44+deep*.24);
+    ellipse(tip,-length,1.5,1.5,rgb(color));
+  }
+  ctx.restore();
+}
+
+function drawOcean(project,clock,deep,travel) {
+  const W=width,H=height;
+  const sunlight=Math.pow(1-deep,2.4);
+  const beamX=W*(.69+Math.sin(clock*.45)*.043);
+  const background=ctx.createLinearGradient(0,0,W*.21,H);
+  background.addColorStop(0,rgb(mix([25,123,148],[1,5,19],deep)));
+  background.addColorStop(.52,rgb(mix([18,88,110],[4,17,35],deep)));
+  background.addColorStop(1,'#020814');
+  ctx.fillStyle=background;
+  ctx.fillRect(0,0,W,H);
+  oceanGlow(beamX,H*.05,Math.max(W,H)*.85,[101,245,234],sunlight*.70);
+  oceanGlow(W*.64,H*.48,Math.max(W,H)*.58,[28,86,169],.10+deep*.17);
+  ctx.save();
+  ctx.globalCompositeOperation='screen';
+  for(let i=0;i<10 && sunlight>.01;i++){
+    const topX=beamX+(i-4)*W*.044;
+    const lowerX=topX+W*(.065*(i-4)+.026*Math.sin(clock*.5+i));
+    const glow=ctx.createLinearGradient(topX,0,lowerX,H*.86);
+    glow.addColorStop(0,`rgba(175,255,236,${(.064+.028*Math.sin(clock*.7+i))*sunlight})`);
+    glow.addColorStop(1,'transparent');
+    ctx.fillStyle=glow;
+    ctx.beginPath();
+    ctx.moveTo(topX-W*.015,0);
+    ctx.lineTo(topX+W*.011,0);
+    ctx.lineTo(lowerX+W*.064,H);
+    ctx.lineTo(lowerX-W*.058,H);
+    ctx.fill();
+  }
+  ctx.restore();
+  // Seafloor and far walls frame a passage rather than a floating exhibit.
+  const slope=H*(.73+.052*Math.sin(current.eye[2]*.035));
+  const floor=ctx.createLinearGradient(0,slope-H*.10,0,H);
+  floor.addColorStop(0,'#173a5052');
+  floor.addColorStop(.60,'#071526cb');
+  floor.addColorStop(1,'#020713');
+  ctx.save();
+  ctx.translate(0,slope);
+  ctx.scale(W,H);
+  paint('M0 -.07 Q.14 -.20 .26 -.045 Q.35 .045 .47 .032 Q.59 .025 .71 -.022 Q.88 -.144 1 -.09 L1 .36 L0 .36 Z',floor);
+  ctx.restore();
+  const walls=ctx.createLinearGradient(0,H*.36,0,H);
+  walls.addColorStop(0,'#0b2033ac');
+  walls.addColorStop(1,'#020711');
+  ctx.save();
+  const shift=Math.sin(current.eye[0]*.14)*W*.04;
+  ctx.translate(shift,slope);
+  ctx.scale(W,H);
+  paint('M-.23 -.24 Q-.06 -.28 .03 -.14 Q.14 -.15 .20 -.03 Q.25 .025 .32 .041 Q.33 .061 .38 .098 L.48 .37 L-.23 .38Z',walls);
+  paint('M1.22 -.36 Q1.07 -.37 .995 -.22 Q.92 -.16 .89 -.071 Q.82 -.061 .80 .029 Q.74 .025 .68 .17 L.51 .37 L1.25 .46Z',walls);
+  ctx.restore();
+  const scenery=[];
+  for(const reef of reefs){
+    const p=project(reef.p);
+    if(p && p[2]<68)scenery.push({p,reef});
+  }
+  for(const fish of swimmers){
+    const [x,y,z]=fish.p;
+    const w=fish.phase+clock*(fish.guide?.57:.73);
+    const p=project([x+Math.sin(w)*(fish.guide?.52:1.63),y+Math.sin(w*1.34)*.33,z+Math.cos(w)*.50]);
+    if(!p||p[2]>65) continue;
+    if(fish.guide && fish.kind===active) guideArea={x:p[0],y:p[1],radius:Math.max(42,p[3]*1.25)};
+    scenery.push({p,fish});
+  }
+  scenery.sort((a,b)=>b.p[2]-a.p[2]);
+  for(const item of scenery){
+    if(item.reef) drawReef(item.reef,item.p,clock,deep);
+    else drawSwimmer(item.fish,item.p,clock,deep,item.p[2]<32);
+  }
+  ctx.save();
+  ctx.globalCompositeOperation='screen';
+  for(const particle of plankton) {
+    const [x,y,z]=particle.p;
+    const point=project([x+Math.sin(clock*.42+particle.phase)*.4,y+Math.sin(clock*.32+particle.phase)*.7,z]);
+    if(!point||point[2]>50||point[0]<-15||point[0]>W+15||point[1]<-15||point[1]>H+15) continue;
+    const radius=Math.min(7,Math.max(.45,particle.size*point[3]*.018));
+    const alpha=(.2+.29*(.5+.5*Math.sin(clock*1.8+particle.phase)))*Math.min(1,point[2]*.6);
+    ctx.globalAlpha=alpha;
+    dot(point[0],point[1],radius,'#a5fff0');
+    if(radius>2.15) oceanGlow(point[0],point[1],radius*(3+travel),[69,230,251],.54);
+  }
+  ctx.restore();
+  const edge=ctx.createRadialGradient(W*.59,H*.43,H*.16,W*.54,H*.44,Math.max(W,H)*.67);
+  edge.addColorStop(0,'transparent');
+  edge.addColorStop(1,`rgba(0,3,13,${.49+deep*.29})`);
+  ctx.fillStyle=edge;
+  ctx.fillRect(0,0,W,H);
+}
+
 function render(time) {
   if (!ctx) return;
   const ratio = Math.min(devicePixelRatio,1.75);
@@ -422,133 +914,46 @@ function render(time) {
     canvas.height=Math.round(height*ratio);
     ctx.setTransform(ratio,0,0,ratio,0,0);
   }
-  const t = motion.matches ? 1 : Math.max(0,Math.min(1,(time-started)/2200));
-  const eased = t*t*(3-2*t);
-  current={eye:mix(start.eye,target.eye,eased),look:mix(start.look,target.look,eased),depth:lerp(start.depth,target.depth,eased)};
-  // Lift the camera over islands during long jumps. Underwater it dives in a continuous arc.
-  const eye=current.eye.slice();
-  eye[1]+=Math.sin(Math.PI*t)*Math.min(sea?2:9,length(vector(target.eye,start.eye))*.13);
-  const forward=unit(vector(current.look,eye)),right=unit(cross(forward,[0,1,0])),up=cross(right,forward);
-  const zoom=mobile()?Math.min(width*1.16,height*.62):Math.min(height*.99,width*.74);
-  const origin=[width*(mobile()?.51:.69),height*(mobile()?.36:.52)];
+  const t=motion.matches?1:Math.max(0,Math.min(1,(time-started)/duration));
+  const eased=t*t*(3-2*t);
+  const arc=Math.sin(Math.PI*t);
+  const clock=motion.matches?0:time*.001;
+  const range=length(vector(target.eye,start.eye));
+  const bank=Math.min(range*.13,4.3)*arc;
+  const eye=mix(start.eye,target.eye,eased);
+  const look=mix(start.look,target.look,eased);
+  if(sea){
+    const direction=Math.sign(target.depth-start.depth) || 1;
+    eye[0]+=bank*direction;
+    eye[1]+=bank*.22;
+    look[1]-=bank*.74*direction;
+    look[0]-=bank*.27;
+  }
+  current={eye,look,depth:lerp(start.depth,target.depth,eased),meters:lerp(start.meters,target.meters,eased)};
+  guideArea=undefined;
+  if(!sea){
+    drawZoo(clock,t,(target.eye[2]-start.eye[2])*arc*width*.005);
+    finishScene();
+    return;
+  }
+  const depthLabel=Math.round(current.meters).toLocaleString('ja-JP')+' m';
+  if($('depth').textContent!==depthLabel) $('depth').textContent=depthLabel;
+  const forward=unit(vector(look,eye));
+  const right=unit(cross(forward,[Math.sin(-bank*.018),1,0]));
+  const up=cross(right,forward);
+  const zoom=(mobile()?Math.min(width*1.06,height*.63):Math.min(height*.89,width*.71))*(1-.13*arc);
+  const origin=[width*(mobile()?.52:.65),height*(mobile()?.37:.43)];
   function project(point) {
-    const offset=vector(point,eye), d=inner(offset,forward);
-    if(d<.32) return null;
-    const scale=zoom/d;
-    return [origin[0]+inner(offset,right)*scale,origin[1]-inner(offset,up)*scale,d,scale];
+    const offset=vector(point,eye);
+    const distance=inner(offset,forward);
+    if(distance<.4)return null;
+    const scale=zoom/distance;
+    return [origin[0]+inner(offset,right)*scale,origin[1]-inner(offset,up)*scale,distance,scale];
   }
-  const deep=current.depth, clock=motion.matches?0:time*.001;
-  const sky=sea?mix([18,121,153],[3,10,31],deep):mix([83,64,132],[60,72,139],deep);
-  const horizon=sea?mix([55,155,158],[14,30,71],deep):mix([213,139,189],[130,142,209],deep);
-  const g=ctx.createLinearGradient(0,0,width*.24,height);
-  g.addColorStop(0,rgb(sky));
-  g.addColorStop(sea?.56:.64,rgb(horizon));
-  g.addColorStop(1,sea?'#041426':'#433467');
-  ctx.fillStyle=g;
-  ctx.fillRect(0,0,width,height);
-  const halo=ctx.createRadialGradient(origin[0],height*.18,0,origin[0],height*.18,Math.max(width,height)*.63);
-  halo.addColorStop(0,sea?`rgba(154,255,230,${.42*(1-deep)})`:'rgba(255,212,229,.75)');
-  halo.addColorStop(1,'transparent');
-  ctx.fillStyle=halo;
-  ctx.fillRect(0,0,width,height);
-  if(sea) {
-    for(let i=0;i<8;i++){
-      const rx=width*(.43+i*.065), displacement=Math.sin(clock*.36+i)*18;
-      ctx.fillStyle=`rgba(176,255,237,${(.028+i*.003)*(1-deep)})`;
-      ctx.beginPath();
-      ctx.moveTo(rx,0);
-      ctx.lineTo(rx+width*.024,0);
-      ctx.lineTo(rx+width*.27+displacement,height);
-      ctx.lineTo(rx-width*.19+displacement,height);
-      ctx.fill();
-    }
-  } else {
-    const moonX=width*(mobile()?.73:.83), moonY=height*.24;
-    dot(moonX,moonY,Math.min(width,height)*.075,'#ffe1d5ab');
-    for(let i=0;i<4;i++){
-      const x=width*(.12+i*.27), y=height*(.57+i*.07);
-      const cloud=ctx.createRadialGradient(x,y,2,x,y,width*.38);
-      cloud.addColorStop(0,'#f4bbd860');
-      cloud.addColorStop(1,'transparent');
-      ctx.save();
-      ctx.translate(0,y*.73);
-      ctx.scale(1,.27);
-      ctx.fillStyle=cloud;
-      ctx.fillRect(0,0,width,height*4);
-      ctx.restore();
-    }
-  }
-  const drawables=[];
-  for(const shape of shapes){
-    const points=shape.vertices||shape.points;
-    if(points){
-      const projected=points.map(project);
-      if(projected.some(point=>!point)) continue;
-      drawables.push({shape,points:projected,d:projected.reduce((sum,p)=>sum+p[2],0)/projected.length});
-      continue;
-    }
-    const p=shape.p.slice();
-    if(shape.animated) {
-      p[1]+=Math.sin(clock*1.6+shape.index)*.11;
-      if(sea) p[0]+=Math.sin(clock*.9+shape.index)*.36;
-    }
-    const point=project(p);
-    if(point) drawables.push({shape,point,d:point[2]});
-  }
-  drawables.sort((a,b)=>b.d-a.d);
-  for(const item of drawables){
-    const {shape,point,points,d}=item;
-    if(d>115) continue;
-    const fog=Math.min(.76,Math.max(0,(d-13)/95));
-    if(points){
-      ctx.beginPath();
-      points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));
-      if(shape.vertices){
-        ctx.closePath();
-        ctx.fillStyle=tint(shape.color,horizon,fog);
-        ctx.fill();
-      }else{
-        ctx.strokeStyle=tint(shape.color,sky,.37+fog*.42);
-        ctx.globalAlpha=.43;
-        ctx.stroke();
-        ctx.globalAlpha=1;
-      }
-      continue;
-    }
-    const [x,y,,s]=point;
-    if(x<-120||x>width+120||y<-150||y>height+150) continue;
-    if(shape.glow && d<28) {
-      const radius=Math.max(2,s*Math.max(shape.rx,shape.ry)*1.65);
-      const light=ctx.createRadialGradient(x,y,0,x,y,radius);
-      light.addColorStop(0,tint(shape.color,[255,255,255],.28).replace('rgb(','rgba(').replace(')',',.29)'));
-      light.addColorStop(1,'transparent');
-      ctx.fillStyle=light;
-      ctx.fillRect(x-radius,y-radius,2*radius,2*radius);
-    }
-    ctx.save();
-    ctx.translate(x,y);
-    ctx.rotate(shape.angle);
-    ctx.scale(shape.rx*s,shape.ry*s);
-    const color=ctx.createRadialGradient(-.32,-.43,.06,0,0,1.14);
-    color.addColorStop(0,tint(mix(shape.color,[255,255,255],.41),horizon,fog));
-    color.addColorStop(.58,tint(shape.color,horizon,fog));
-    color.addColorStop(1,tint(mix(shape.color,sky,.38),horizon,fog));
-    ctx.fillStyle=color;
-    ctx.beginPath();
-    ctx.arc(0,0,1,0,2*Math.PI);
-    ctx.fill();
-    ctx.restore();
-  }
-  for(const particle of particles) {
-    const [x,y,z]=particle.p;
-    const point=project([x+Math.sin(clock*.37+particle.phase)*.35,y+Math.sin(clock*.61+particle.phase)*.29,z]);
-    if(!point||point[2]>55) continue;
-    const size=Math.max(.5,Math.min(3,particle.size*point[3]));
-    ctx.globalAlpha=.26+.38*(.5+.5*Math.sin(clock*1.3+particle.phase));
-    dot(point[0],point[1],size,sea?'#afffed':'#fff1d0');
-  }
-  ctx.globalAlpha=1;
+  drawOcean(project,clock,current.depth,arc);
+  finishScene();
 }
+
 let frame;
 function animate(time) {
   render(time);
