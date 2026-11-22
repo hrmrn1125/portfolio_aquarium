@@ -3,95 +3,816 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f7f6f1">
-<meta name="description" content="ぽけしっぽ｜大切な家族の健康を、やさしく記録するペットケアアプリ（自主制作プロトタイプ）">
+<meta name="theme-color" content="#f8f3ea">
+<meta name="description" content="ぽけしっぽ｜大切な家族の健康を、やさしく記録するペット健康管理アプリの自主制作プロトタイプ">
 <title>ぽけしっぽ | ペットの健康手帳</title>
 <style>
-:root{--bg:#f7f6f1;--card:#fff;--ink:#33483e;--mute:#89968d;--line:#e7eae3;--green:#719d82;--pale:#e9f1e8;--cream:#f7eddc;--pink:#f5e7e4;--shadow:0 8px 30px #33483e0a}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;color:var(--ink);background:var(--bg)}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #719d82;outline-offset:2px}
-button{border:0;color:inherit}button:disabled{opacity:.5}input,select,textarea{border:1px solid var(--line);background:white;color:var(--ink);border-radius:13px;padding:12px;width:100%;font-size:16px}textarea{min-height:90px;resize:vertical}label{display:grid;gap:6px;font-size:12px;font-weight:700;color:#6f8277}h1,h2,h3,p{margin:0}h2{font-size:18px;letter-spacing:.015em}h3{font-size:14px}.app{max-width:510px;min-height:100dvh;margin:auto;padding:22px 18px calc(106px + env(safe-area-inset-bottom))}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.logo{display:flex;align-items:center;gap:9px;font-size:21px;font-weight:900;letter-spacing:.06em}.logo-icon{width:33px;height:33px;background:#dbe9dc;border-radius:12px;display:grid;place-items:center;font-size:19px}.mini-label{font-size:10px;letter-spacing:.14em;font-weight:700;color:var(--green);margin-top:2px}.icon-btn{width:40px;height:40px;border-radius:15px;background:white;font-size:19px;display:grid;place-items:center;box-shadow:var(--shadow)}.section{display:none;animation:appear .25s ease}.section.active{display:block}@keyframes appear{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:none}}.hello{font-size:12px;color:var(--mute);margin-bottom:9px}.page-title{font-size:25px;font-weight:850;letter-spacing:.02em;line-height:1.5}.subtext{font-size:12px;color:var(--mute);line-height:1.8;margin-top:5px}.pet-hero{position:relative;margin-top:20px;border-radius:28px;background:#e5ede4;overflow:hidden;padding:21px 22px 17px;min-height:225px;display:flex;flex-direction:column;justify-content:space-between}.pet-hero:before{content:"";position:absolute;width:230px;height:230px;border-radius:50%;background:#f5f7ee92;right:-63px;top:-48px}.pet-hero:after{content:"";position:absolute;width:135px;height:135px;border-radius:50%;border:2px solid #ffffff60;right:28px;top:42px}.hero-copy{position:relative;z-index:1}.tag{display:inline-block;padding:7px 10px;border-radius:100px;background:#ffffffb6;color:#71917c;font-size:11px;font-weight:800}.pet-name{font-size:29px;font-weight:900;margin:12px 0 2px}.pet-meta{font-size:12px;color:#708577}.pet-face{position:absolute;right:24px;bottom:23px;width:133px;height:133px;z-index:2;display:grid;place-items:center;border-radius:50%;background:#f5f1e6;box-shadow:0 12px 0 #a8bca526;font-size:78px}.pet-face:after{content:"";position:absolute;bottom:-9px;width:100px;height:12px;border-radius:50%;background:#6f977622;z-index:-1}.hero-tip{position:relative;z-index:3;font-size:12px;font-weight:700;color:#668772;max-width:56%;line-height:1.7}.section-head{display:flex;align-items:center;justify-content:space-between;margin:28px 0 13px}.hint{color:var(--green);font-size:12px;font-weight:800;background:none;padding:5px}.quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.quick{background:var(--card);box-shadow:var(--shadow);border-radius:20px;padding:17px 5px 14px;display:grid;justify-items:center;gap:9px;font-size:12px;font-weight:800}.quick .bubble{display:grid;place-items:center;width:48px;height:48px;border-radius:17px;font-size:22px}.bubble.a{background:#f8eee1}.bubble.b{background:#eaf2ea}.bubble.c{background:#e9edf4}.bubble.d{background:#f7e9eb}.stats{display:grid;grid-template-columns:1fr 1fr;gap:11px}.stat{background:white;padding:17px 17px 16px;border-radius:21px;box-shadow:var(--shadow);min-height:114px}.stat .cap{font-size:11px;color:var(--mute)}.stat .value{font-size:27px;font-weight:850;margin-top:10px}.unit{font-size:12px;color:var(--mute);font-weight:600}.stat .foot{font-size:10px;color:#7e9886;margin-top:6px}.panel{border-radius:23px;background:white;box-shadow:var(--shadow);padding:19px;margin-top:12px}.panel-line{display:flex;justify-content:space-between;align-items:center;gap:10px}.empty{color:var(--mute);font-size:12px;line-height:1.8;padding:16px 0}.record-row{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid #f0f2ec}.record-row:last-child{border:0;padding-bottom:0}.record-emoji{width:42px;height:42px;border-radius:14px;background:var(--bg);display:grid;place-items:center;font-size:21px;flex-shrink:0}.record-copy{flex:1;min-width:0}.record-copy strong{font-size:13px;display:block}.record-copy span{font-size:11px;color:var(--mute);display:block;margin-top:4px;overflow-wrap:anywhere}.record-time{font-size:11px;color:var(--mute);white-space:nowrap}.nav{position:fixed;z-index:8;bottom:0;left:0;right:0;background:#fffefaed;backdrop-filter:blur(15px);border-top:1px solid #ebeee7;padding:11px 14px calc(12px + env(safe-area-inset-bottom))}.nav-inner{max-width:510px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr)}.nav-btn{background:transparent;display:grid;justify-items:center;gap:5px;padding:5px 2px 2px;color:#a0aca3;font-size:10px;font-weight:800}.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.nav-btn.selected{color:#608e71}.nav-btn.selected .nav-label{font-weight:900}.card-title{margin-bottom:5px}.chips{display:flex;gap:7px;overflow-x:auto;margin:22px 0 13px;padding-bottom:4px}.chip{white-space:nowrap;border-radius:99px;background:#fff;border:1px solid var(--line);padding:9px 13px;font-size:12px;font-weight:800}.chip.selected{background:#dce9de;color:#48785c;border-color:#dce9de}.chart{width:100%;height:160px;display:block;margin:10px 0}.chart-labels{display:flex;justify-content:space-between;color:var(--mute);font-size:10px}.input-stack{display:grid;gap:13px;margin-top:17px}.primary{background:var(--green);color:white;padding:14px 18px;border-radius:15px;font-size:14px;font-weight:800;width:100%;box-shadow:0 8px 20px #719d8225}.secondary{background:#e7efe7;color:#65846c;border-radius:14px;padding:12px 16px;font-weight:800;font-size:13px}.schedule{display:grid;gap:11px;margin-top:20px}.schedule-item{border-radius:19px;background:#fff;padding:17px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow)}.schedule-date{border-radius:13px;background:#eaf1e9;width:54px;height:55px;flex-shrink:0;display:grid;place-content:center;text-align:center;font-size:16px;font-weight:900}.schedule-date small{font-size:10px;color:var(--green)}.schedule-detail{min-width:0;flex:1}.schedule-detail strong{font-size:13px}.schedule-detail p{color:var(--mute);font-size:11px;margin-top:5px;overflow-wrap:anywhere}.tiny{font-size:11px;color:var(--mute)}.profile-card{display:flex;align-items:center;gap:18px;background:white;padding:20px;border-radius:24px;margin-top:22px}.avatar{font-size:48px;background:#ecf1e8;width:83px;height:83px;border-radius:22px;display:grid;place-items:center}.profile-card h2{font-size:21px}.profile-card p{font-size:12px;color:var(--mute);margin-top:6px}.btn-row{display:flex;align-items:center;gap:9px}.btn-row>*{flex:1}.modal-back{position:fixed;inset:0;background:#253b31a6;z-index:20;display:none;justify-content:center;align-items:flex-end;padding:12px 12px max(12px,env(safe-area-inset-bottom))}.modal-back.show{display:flex}.modal{background:#fbfbf8;border-radius:26px;width:min(100%,510px);padding:23px;max-height:90dvh;overflow:auto;box-shadow:0 30px 90px #1b302540}.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.modal-head h2{font-size:19px}.x{width:35px;height:35px;border-radius:12px;background:#eef1eb;font-size:20px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}.toast{position:fixed;z-index:30;left:50%;bottom:105px;transform:translateX(-50%);background:#324d3d;color:white;border-radius:13px;padding:11px 18px;font-size:12px;font-weight:800;display:none;white-space:nowrap;max-width:90%;text-align:center}.toast.show{display:block}.disclaimer{font-size:10px;color:#9aa69a;line-height:1.7;margin-top:22px}.pill{font-size:10px;color:#628b71;background:#ecf4e9;padding:7px 9px;border-radius:99px}.danger{color:#b66a62;font-size:12px;background:transparent}.pet-picker{width:100%;margin-top:7px}.right{margin-left:auto}@media(min-width:700px){body{background:#e8ede7}.app{background:#f7f6f1;box-shadow:0 12px 70px #304c3420}.nav{left:50%;right:auto;width:510px;transform:translateX(-50%)}}@media(max-width:365px){.pet-face{right:7px;width:120px;height:120px;font-size:68px}.quick-grid{gap:6px}.quick{font-size:11px}.quick .bubble{width:41px;height:41px}.app{padding-left:13px;padding-right:13px}}
+:root{
+  --bg:#f8f3ea;
+  --paper:#fffdf8;
+  --paper-2:#fbf7ef;
+  --ink:#3f3128;
+  --sub:#7b6b60;
+  --line:#e7ddd0;
+  --line-2:#efe6da;
+  --accent:#8e6a52;
+  --accent-2:#b68d70;
+  --green:#7d9b7d;
+  --green-bg:#edf4ed;
+  --pink:#f4e7e2;
+  --yellow:#f3ead5;
+  --shadow:0 10px 28px rgba(92,68,52,.08);
+  --radius-xl:24px;
+  --radius-lg:18px;
+  --radius-md:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:"Hiragino Sans","Yu Gothic","Noto Sans JP",system-ui,sans-serif;background:
+  linear-gradient(to right, transparent 22px, rgba(188,74,74,.45) 22px, rgba(188,74,74,.45) 24px, transparent 24px),
+  repeating-linear-gradient(to bottom, #0000 0 43px, rgba(160,140,124,.18) 43px 44px),
+  var(--bg);
+  color:var(--ink);
+}
+button,input,select,textarea{font:inherit}
+button{border:0;background:none;color:inherit;padding:0;cursor:pointer}
+input,select,textarea{width:100%;border:1px solid var(--line);background:white;border-radius:14px;padding:12px 14px;color:var(--ink);font-size:16px}
+textarea{min-height:92px;resize:vertical}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #8c7057;outline-offset:2px}
+img{max-width:100%;display:block}
+strong{font-weight:800}
+.app{max-width:520px;margin:0 auto;min-height:100dvh;padding:22px 18px calc(96px + env(safe-area-inset-bottom));}
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.03em;font-size:28px}
+.brand-mark{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--accent)}
+.header-icon{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.6);display:grid;place-items:center;box-shadow:var(--shadow);font-size:18px;color:var(--accent)}
+.page{display:none}
+.page.active{display:block}
+.kicker{font-size:12px;color:var(--sub);letter-spacing:.08em;margin-bottom:8px}
+.hero-title,.page-title,.section-title,.sub-title,.brand{font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif}
+.hero-title,.page-title{font-size:40px;line-height:1.18;font-weight:800;letter-spacing:.02em;margin:0 0 10px}
+.sub-copy{font-size:14px;line-height:1.8;color:var(--sub);margin-bottom:16px}
+.panel{background:rgba(255,253,248,.86);backdrop-filter:blur(2px);border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow)}
+.hero-card{padding:18px;margin-bottom:16px}
+.pet-main{display:flex;align-items:center;gap:14px}
+.avatar-lg,.avatar-md,.avatar-sm{border-radius:50%;display:grid;place-items:center;border:1px solid #dbcfc2;background:radial-gradient(circle at 30% 30%, #fff, #f1e6d8 72%);box-shadow:inset 0 0 0 6px rgba(255,255,255,.45)}
+.avatar-lg{width:98px;height:98px;font-size:42px;flex:0 0 98px}
+.avatar-md{width:72px;height:72px;font-size:32px;flex:0 0 72px}
+.avatar-sm{width:54px;height:54px;font-size:24px;flex:0 0 54px}
+.pet-main-copy h2{font-size:30px;margin:0 0 6px}
+.pet-meta{font-size:14px;color:var(--sub);line-height:1.6}
+.inline-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.inline-tag{padding:7px 11px;border-radius:999px;background:var(--green-bg);color:#577257;font-size:12px;font-weight:700}
+.grid-two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.stat-card{padding:16px 14px}
+.stat-card .label{font-size:12px;color:var(--sub);margin-bottom:8px}
+.stat-card .value{font-size:30px;font-weight:800;line-height:1}
+.stat-card .unit{font-size:16px;margin-left:4px}
+.stat-card .note{font-size:12px;color:var(--sub);margin-top:6px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:20px 4px 10px}
+.section-title{font-size:18px;font-weight:800}
+.text-link{font-size:13px;font-weight:700;color:var(--accent)}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.quick-btn{padding:14px 8px 12px;background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);display:grid;place-items:center;gap:8px}
+.quick-btn .icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--green-bg);font-size:18px}
+.quick-btn .txt{font-size:13px;font-weight:700}
+.card-list{display:grid;gap:10px}
+.record-card,.schedule-card,.pet-row,.info-card{padding:16px}
+.record-row{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:12px;padding:14px 4px}
+.record-row + .record-row{border-top:1px solid var(--line-2)}
+.icon-dot{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:#f4ece2;color:var(--accent);font-size:18px;font-weight:700}
+.record-copy strong{display:block;font-size:16px;margin-bottom:3px}
+.record-copy span{display:block;font-size:13px;color:var(--sub);line-height:1.45}
+.record-time{text-align:right;font-size:12px;color:var(--sub);line-height:1.5;white-space:nowrap}
+.empty{padding:22px 14px;text-align:center;color:var(--sub);line-height:1.8;font-size:14px}
+.chips{display:flex;gap:8px;overflow:auto;padding-bottom:4px;margin-bottom:12px}
+.chips::-webkit-scrollbar{display:none}
+.chip{padding:9px 14px;border:1px solid #d8cbbd;background:white;border-radius:999px;font-weight:700;font-size:14px;white-space:nowrap}
+.chip.active{background:#f0e4d6;color:#6f513d;border-color:#ccb298}
+.chart-card{padding:16px}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.pill{padding:6px 10px;border-radius:999px;background:var(--green-bg);font-size:12px;font-weight:700;color:#5c745d}
+.chart-wrap{padding:6px 0 2px}
+.chart{width:100%;height:auto;display:block}
+.chart-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);margin-top:6px}
+.calendar-card{padding:16px}
+.calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.calendar-head strong{font-size:18px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;font-size:12px}
+.weekday,.day{background:white;border:1px solid var(--line);border-radius:10px;min-height:38px;display:grid;place-items:center;text-align:center}
+.weekday{font-weight:700;color:var(--sub);background:#fbf7ef}
+.day{position:relative;font-weight:700;padding:4px}
+.day.muted{color:#c2b6a8;background:rgba(255,255,255,.55)}
+.day.today{border-color:#cfa98d;background:#fffaf2}
+.day.has::after{content:"";position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:#b87957}
+.schedule-card{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center}
+.date-badge{border-radius:16px;background:#efe2d1;padding:10px 8px;text-align:center}
+.date-badge strong{display:block;font-size:24px;line-height:1}
+.date-badge span{display:block;font-size:12px;color:var(--sub);margin-top:4px}
+.schedule-copy strong{display:block;font-size:17px;margin-bottom:4px}
+.schedule-copy span{display:block;color:var(--sub);font-size:13px;line-height:1.6}
+.schedule-kind{font-size:12px;color:var(--accent);font-weight:700}
+.profile-card{padding:18px}
+.info-list{display:grid;gap:12px}
+.info-item{display:grid;grid-template-columns:92px 1fr;gap:10px;align-items:start;padding:12px 0}
+.info-item + .info-item{border-top:1px solid var(--line-2)}
+.info-label{font-size:13px;color:var(--sub);font-weight:700}
+.info-value{font-size:15px;line-height:1.8}
+.note-box{padding:14px;border:1px dashed #d6c7b8;border-radius:16px;background:#fffdfa}
+.pet-row{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:12px}
+.pet-row + .pet-row{border-top:1px solid var(--line-2)}
+.pet-row strong{display:block;font-size:17px;margin-bottom:4px}
+.pet-row span{font-size:13px;color:var(--sub)}
+.arrow{width:34px;height:34px;border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;color:var(--accent)}
+.primary-btn,.secondary-btn,.ghost-btn,.danger-btn{width:100%;border-radius:999px;padding:14px 16px;font-weight:800;text-align:center}
+.primary-btn{background:#f0e4d6;color:#5d4433;border:1px solid #d1b59a}
+.secondary-btn{background:white;border:1px dashed #cbb29b;color:#5d4433}
+.ghost-btn{background:white;border:1px solid var(--line);color:var(--accent)}
+.danger-btn{background:#fff;border:1px solid #ebc7c7;color:#9d5e5e}
+.sticky-nav{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(248,243,234,.1),rgba(248,243,234,.92) 22%, rgba(248,243,234,.98));backdrop-filter:blur(10px)}
+.nav-inner{max-width:520px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.nav-btn{min-height:70px;padding:10px 6px;background:#fffdfa;border:1px solid #d8cfc1;border-radius:18px;display:grid;place-items:center;gap:6px;box-shadow:var(--shadow)}
+.nav-btn .ni{font-size:20px;line-height:1}
+.nav-btn .nt{font-size:13px;font-weight:700}
+.nav-btn.active{background:#f6ecdf;color:#6b4f3d;border-color:#cdb399}
+.disclaimer{font-size:12px;color:var(--sub);line-height:1.8;margin-top:14px}
+.modal-back{position:fixed;inset:0;background:rgba(35,22,12,.24);display:none;align-items:flex-end;justify-content:center;padding:20px}
+.modal-back.show{display:flex}
+.modal{width:min(520px,100%);max-height:min(86dvh,860px);overflow:auto;background:#fffdfa;border-radius:28px;border:1px solid var(--line);box-shadow:0 30px 60px rgba(0,0,0,.15);padding:20px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.modal-head h2{font-size:22px}
+.close-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;font-size:22px;color:var(--accent)}
+.form-stack{display:grid;gap:12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-label{display:grid;gap:6px;font-size:12px;font-weight:700;color:#6f6257}
+.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:102px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#4c3a2f;color:#fff;padding:12px 16px;border-radius:999px;font-size:13px;font-weight:700;transition:.25s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (max-width:390px){
+  .hero-title,.page-title{font-size:34px}
+  .pet-main-copy h2{font-size:26px}
+  .quick-grid{grid-template-columns:repeat(2,1fr)}
+  .form-row,.grid-two{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="top"><div><div class="logo"><span class="logo-icon">🐾</span>ぽけしっぽ</div><div class="mini-label">PET HEALTH JOURNAL · PROTOTYPE</div></div><button class="icon-btn" id="petSwitch" aria-label="ペットを切り替える">🐶</button></header>
-<main>
-<section class="section active" id="home">
-<p class="hello" id="todayText"></p><h1 class="page-title">今日も、いっしょに。<br>小さな変化を記録しよう。</h1>
-<div class="pet-hero"><div class="hero-copy"><span class="tag">♡ たいせつな家族</span><h2 class="pet-name" id="heroName"></h2><p class="pet-meta" id="heroMeta"></p></div><div class="pet-face" id="heroFace">🐶</div><p class="hero-tip">毎日の「いつも」を、<br>未来の安心につなげよう。</p></div>
-<div class="section-head"><h2>かんたん記録</h2><span class="tiny">タップですぐに追加</span></div>
-<div class="quick-grid">
-<button class="quick" data-quick="food"><span class="bubble a">🍚</span>ごはん</button>
-<button class="quick" data-quick="walk"><span class="bubble b">🦮</span>おさんぽ</button>
-<button class="quick" data-quick="toilet"><span class="bubble c">💩</span>トイレ</button>
-<button class="quick" data-quick="condition"><span class="bubble d">💗</span>体調</button>
+  <header class="header">
+    <div class="brand"><span class="brand-mark">🐾</span><span>ぽけしっぽ</span></div>
+    <button class="header-icon" id="settingsBtn" aria-label="設定">⚙︎</button>
+  </header>
+
+  <section id="page-home" class="page active">
+    <p class="kicker" id="todayLabel"></p>
+    <h1 class="hero-title">今日のようすを、<br>やさしく記録。</h1>
+    <p class="sub-copy">毎日のごはん、散歩、体調、予定をひとつに。<br>大切な家族の「いつも」を、あとから振り返りやすく。</p>
+
+    <div class="panel hero-card">
+      <div class="pet-main">
+        <div class="avatar-lg" id="homeAvatar"></div>
+        <div class="pet-main-copy">
+          <h2 id="homePetName"></h2>
+          <div class="pet-meta" id="homePetMeta"></div>
+          <div class="inline-tags">
+            <span class="inline-tag" id="daysTogether"></span>
+            <span class="inline-tag" id="nextCareTag"></span>
+          </div>
+        </div>
+      </div>
+      <div class="grid-two">
+        <div class="panel stat-card">
+          <div class="label">最新の体重</div>
+          <div class="value" id="latestWeight">—<span class="unit">kg</span></div>
+          <div class="note" id="weightNote">まだ体重記録がありません</div>
+        </div>
+        <div class="panel stat-card">
+          <div class="label">今日のおさんぽ</div>
+          <div class="value" id="todayWalk">0<span class="unit">分</span></div>
+          <div class="note">今日の合計時間</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="section-title">かんたん記録</div>
+      <button class="text-link" id="addRecordBtnTop">＋ 記録する</button>
+    </div>
+    <div class="quick-grid">
+      <button class="quick-btn" data-record="food"><span class="icon">🍚</span><span class="txt">ごはん</span></button>
+      <button class="quick-btn" data-record="walk"><span class="icon">🦮</span><span class="txt">散歩</span></button>
+      <button class="quick-btn" data-record="toilet"><span class="icon">💩</span><span class="txt">トイレ</span></button>
+      <button class="quick-btn" data-record="condition"><span class="icon">💗</span><span class="txt">体調</span></button>
+    </div>
+
+    <div class="section-head">
+      <div class="section-title">今日の記録</div>
+      <button class="text-link" data-go="records">一覧を見る</button>
+    </div>
+    <div class="panel record-card" id="homeRecordList"></div>
+
+    <div class="section-head">
+      <div class="section-title">これからの予定</div>
+      <button class="text-link" data-go="schedule">予定を見る</button>
+    </div>
+    <div class="card-list" id="homeScheduleList"></div>
+
+    <p class="disclaimer">※ 自主制作のデモです。健康状態の診断や医療判断を行うものではありません。気になる症状がある場合は、獣医師へ相談してください。</p>
+  </section>
+
+  <section id="page-records" class="page">
+    <p class="kicker">HEALTH RECORDS</p>
+    <h1 class="page-title">日々の記録</h1>
+    <p class="sub-copy">食事・散歩・トイレ・体調・体重の変化を、あとで見返しやすく整理。</p>
+
+    <div class="chips" id="filterChips">
+      <button class="chip active" data-filter="all">すべて</button>
+      <button class="chip" data-filter="weight">体重</button>
+      <button class="chip" data-filter="food">ごはん</button>
+      <button class="chip" data-filter="walk">散歩</button>
+      <button class="chip" data-filter="toilet">トイレ</button>
+      <button class="chip" data-filter="condition">体調</button>
+    </div>
+
+    <div class="panel chart-card">
+      <div class="chart-header">
+        <div class="section-title">体重の推移</div>
+        <span class="pill">最新7件</span>
+      </div>
+      <div class="chart-wrap"><svg class="chart" id="weightChart" viewBox="0 0 340 170" aria-label="体重グラフ"></svg></div>
+      <div class="chart-labels"><span>過去</span><span>最新</span></div>
+    </div>
+
+    <div class="section-head">
+      <div class="section-title">記録一覧</div>
+      <button class="text-link" id="addRecordBtn">＋ 追加</button>
+    </div>
+    <div class="panel record-card" id="recordList"></div>
+  </section>
+
+  <section id="page-schedule" class="page">
+    <p class="kicker">CARE CALENDAR</p>
+    <h1 class="page-title">お世話の予定</h1>
+    <p class="sub-copy">通院・予防接種・お薬・トリミングなど、忘れたくない予定をひとまとめに。</p>
+
+    <div class="panel calendar-card">
+      <div class="calendar-head">
+        <button class="text-link" id="prevMonth">〈 前月</button>
+        <strong id="calendarLabel"></strong>
+        <button class="text-link" id="nextMonth">次月 〉</button>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+
+    <div class="section-head">
+      <div class="section-title">予定一覧</div>
+      <button class="text-link" id="addScheduleBtn">＋ 追加</button>
+    </div>
+    <div class="card-list" id="scheduleList"></div>
+  </section>
+
+  <section id="page-pet" class="page">
+    <p class="kicker">PET PROFILE</p>
+    <h1 class="page-title">うちの子のこと</h1>
+    <p class="sub-copy">基本情報や大切なメモを、必要なときにすぐ見返せるように。</p>
+
+    <div class="panel profile-card">
+      <div class="pet-main">
+        <div class="avatar-md" id="profileAvatar"></div>
+        <div class="pet-main-copy">
+          <h2 id="profileName" style="font-size:28px"></h2>
+          <div class="pet-meta" id="profileMeta"></div>
+        </div>
+      </div>
+      <div class="section-head" style="margin:18px 0 8px">
+        <div class="section-title">プロフィール</div>
+        <button class="text-link" id="editPetBtn">編集する</button>
+      </div>
+      <div class="info-list" id="profileInfoList"></div>
+    </div>
+
+    <div class="section-head">
+      <div class="section-title">ペットを切り替え</div>
+      <button class="text-link" id="addPetBtn">＋ 追加</button>
+    </div>
+    <div class="panel info-card" id="petList"></div>
+
+    <div style="margin-top:14px">
+      <button class="danger-btn" id="resetBtn">デモデータを初期化</button>
+    </div>
+  </section>
 </div>
-<div class="section-head"><h2>今日のようす</h2><button class="hint" data-tab="records">すべて見る ↗</button></div>
-<div class="stats"><div class="stat"><p class="cap">⚖️ 最新の体重</p><div class="value" id="homeWeight">—<span class="unit"> kg</span></div><p class="foot" id="weightFoot">記録を追加しよう</p></div><div class="stat"><p class="cap">🦮 今日のおさんぽ</p><div class="value" id="homeWalk">0<span class="unit"> 分</span></div><p class="foot">今日の合計時間</p></div></div>
-<div class="section-head"><h2>今日の記録</h2><button class="hint" data-tab="records">もっと見る ↗</button></div><div class="panel" id="todayRecords"></div>
-<div class="section-head"><h2>これからの予定</h2><button class="hint" data-tab="schedule">予定を見る ↗</button></div><div class="panel" id="upcomingHome"></div>
-<p class="disclaimer">※ 個人制作のデモアプリです。健康状態の診断はできません。気になる症状は獣医師にご相談ください。</p>
-</section>
-<section class="section" id="records">
-<p class="hello">HEALTH RECORDS</p><h1 class="page-title">日々の記録</h1><p class="subtext">毎日のちいさな変化を、あとで振り返れるように。</p>
-<div class="chips" id="recordFilters"><button class="chip selected" data-filter="all">すべて</button><button class="chip" data-filter="weight">体重</button><button class="chip" data-filter="food">ごはん</button><button class="chip" data-filter="walk">散歩</button><button class="chip" data-filter="toilet">トイレ</button><button class="chip" data-filter="condition">体調</button></div>
-<div class="panel"><div class="panel-line"><h2>体重の推移</h2><span class="pill">最新7件</span></div><svg class="chart" id="weightChart" viewBox="0 0 340 160" role="img" aria-label="体重の推移グラフ"></svg><div class="chart-labels"><span>過去の記録</span><span>最新</span></div></div>
-<div class="section-head"><h2>記録一覧</h2><button class="hint" id="addRecordLink">＋ 記録する</button></div><div class="panel" id="allRecords"></div>
-</section>
-<section class="section" id="schedule">
-<p class="hello">CARE CALENDAR</p><h1 class="page-title">お世話の予定</h1><p class="subtext">通院・予防接種・お薬など、忘れたくない予定をまとめて。</p>
-<div class="section-head"><h2>予定リスト</h2><button class="hint" id="addScheduleLink">＋ 予定を追加</button></div><div class="schedule" id="scheduleList"></div><p class="disclaimer">※ この仮案では端末への通知は送信されません。予定はアプリ内で確認できます。</p>
-</section>
-<section class="section" id="profile">
-<p class="hello">PET PROFILE</p><h1 class="page-title">うちの子のこと</h1><p class="subtext">基本情報と大切なメモを、いつでも見られる場所に。</p>
-<div class="profile-card"><div class="avatar" id="profileAvatar">🐶</div><div><h2 id="profileName"></h2><p id="profileInfo"></p><p id="profileAge"></p></div></div>
-<div class="section-head"><h2>プロフィール</h2><button class="hint" id="editPet">編集する ↗</button></div><div class="panel" id="profileDetails"></div>
-<div class="section-head"><h2>ペットを切り替え</h2><button class="hint" id="addPet">＋ 追加する</button></div><div class="panel" id="petList"></div>
-<div class="panel"><p class="tiny">データはこのブラウザ内にのみ保存されます。端末やブラウザの変更、データ消去で失われる場合があります。</p><button class="danger" id="resetDemo" style="margin-top:14px">デモデータを初期化</button></div>
-</section>
-</main>
+
+<nav class="sticky-nav" aria-label="メインメニュー">
+  <div class="nav-inner">
+    <button class="nav-btn active" data-page="home"><span class="ni">⌂</span><span class="nt">ホーム</span></button>
+    <button class="nav-btn" data-page="records"><span class="ni">✎</span><span class="nt">記録</span></button>
+    <button class="nav-btn" data-page="schedule"><span class="ni">◫</span><span class="nt">予定</span></button>
+    <button class="nav-btn" data-page="pet"><span class="ni">🐾</span><span class="nt">うちの子</span></button>
+  </div>
+</nav>
+
+<div class="modal-back" id="modalBack" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h2 id="modalTitle"></h2>
+      <button class="close-btn" id="closeModal" aria-label="閉じる">×</button>
+    </div>
+    <div id="modalContent"></div>
+  </div>
 </div>
-<nav class="nav" aria-label="メインメニュー"><div class="nav-inner">
-<button class="nav-btn selected" data-tab="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg><span class="nav-label">ホーム</span></button>
-<button class="nav-btn" data-tab="records"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><span class="nav-label">記録</span></button>
-<button class="nav-btn" data-tab="schedule"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg><span class="nav-label">予定</span></button>
-<button class="nav-btn" data-tab="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-5 3-7 8-7s8 2 8 7"/></svg><span class="nav-label">うちの子</span></button>
-</div></nav>
-<div class="modal-back" id="modalBack" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h2 id="modalTitle">記録する</h2><button class="x" id="closeModal" aria-label="閉じる">×</button></div><div id="modalBody"></div></div></div>
-<div class="toast" id="toast" role="status"></div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-(function(){
-'use strict';
-const KEY='poketail-pet-health-prototype-v1';
-const icons={weight:'⚖️',food:'🍚',walk:'🦮',toilet:'💩',condition:'💗',medicine:'💊',visit:'🏥',vaccine:'💉',grooming:'✂️',other:'📌'};
-const labels={weight:'体重',food:'ごはん',walk:'おさんぽ',toilet:'トイレ',condition:'体調',medicine:'お薬',visit:'通院',vaccine:'予防接種',grooming:'トリミング',other:'その他'};
-const $=id=>document.getElementById(id);
-const localDate=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');};
-const isoNow=()=>new Date().toISOString();
-const pretty=d=>{if(!d)return '未設定';const a=d.split('-');return a[1]+'月'+a[2]+'日';};
-const safe=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const demo=()=>({active:1,pets:[{id:1,name:'こむぎ',kind:'dog',breed:'トイプードル',birthday:'2022-05-15',sex:'女の子',note:'ささみが大好き。お散歩では公園がお気に入り。',allergies:'なし（サンプル）'}],records:[{id:101,petId:1,type:'weight',value:'4.2',note:'',date:localDate(-12),time:'09:00'},{id:102,petId:1,type:'weight',value:'4.1',note:'',date:localDate(-6),time:'09:00'},{id:103,petId:1,type:'weight',value:'4.2',note:'',date:localDate(-1),time:'09:00'},{id:104,petId:1,type:'food',value:'朝ごはん',note:'いつもどおり完食',date:localDate(),time:'08:15'},{id:105,petId:1,type:'walk',value:'25',note:'公園をお散歩',date:localDate(),time:'09:30'},{id:106,petId:1,type:'condition',value:'元気',note:'食欲もいつもどおり',date:localDate(),time:'10:00'}],schedules:[{id:201,petId:1,type:'vaccine',title:'ワクチンの相談',date:localDate(12),note:'かかりつけの動物病院へ（サンプル）'},{id:202,petId:1,type:'grooming',title:'トリミング',date:localDate(19),note:'予約時間を確認（サンプル）'}]});
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.pets)&&s.pets.length&&Array.isArray(s.records)&&Array.isArray(s.schedules))return s;}catch(e){}return demo();}
-let state=load(),filter='all';
-const store=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){toast('保存できませんでした。ブラウザの容量を確認してね');}};
-const pet=()=>state.pets.find(p=>p.id===state.active)||state.pets[0];
-const entries=()=>state.records.filter(r=>r.petId===state.active).sort((a,b)=>(b.date+' '+b.time).localeCompare(a.date+' '+a.time));
-const appointments=()=>state.schedules.filter(x=>x.petId===state.active).sort((a,b)=>a.date.localeCompare(b.date));
-const petIcon=p=>p.kind==='cat'?'🐱':p.kind==='other'?'🐰':'🐶';
-function ageText(b){if(!b)return '誕生日未登録';const d=new Date(b+'T00:00:00'),n=new Date();if(Number.isNaN(+d))return '誕生日未登録';let y=n.getFullYear()-d.getFullYear();if(n.getMonth()<d.getMonth()||(n.getMonth()===d.getMonth()&&n.getDate()<d.getDate()))y--;return y>=0?y+'歳':'誕生日前';}
-function toast(s){$('toast').textContent=s;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),2200);}
-function tab(id){document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('selected',x.dataset.tab===id));window.scrollTo({top:0,behavior:'smooth'});}
-const formatRecord=r=>{const v=safe(r.value);if(r.type==='weight')return v+' kg';if(r.type==='walk')return v+' 分';return v;};
-function rows(arr,limit){const data=limit?arr.slice(0,limit):arr;if(!data.length)return '<p class="empty">まだ記録がありません。<br>「かんたん記録」から始めてみよう。</p>';return data.map(r=>'<div class="record-row"><div class="record-emoji">'+icons[r.type]+'</div><div class="record-copy"><strong>'+labels[r.type]+' · '+formatRecord(r)+'</strong><span>'+safe(r.note||'記録しました')+'</span></div><span class="record-time">'+pretty(r.date)+'<br>'+safe(r.time||'')+'</span></div>').join('');}
-function chart(){const data=entries().filter(x=>x.type==='weight').reverse().slice(-7);const s=$('weightChart');s.textContent='';const ns='http://www.w3.org/2000/svg';function elem(tag,attr){const e=document.createElementNS(ns,tag);Object.keys(attr).forEach(k=>e.setAttribute(k,attr[k]));s.append(e);return e;}[40,80,120].forEach(y=>elem('line',{x1:10,y1:y,x2:330,y2:y,stroke:'#e7ece5','stroke-dasharray':'4 5'}));if(!data.length){const e=elem('text',{x:170,y:88,'text-anchor':'middle',fill:'#95a298','font-size':12});e.textContent='体重を記録するとグラフになります';return;}let min=Math.min(...data.map(x=>Number(x.value))),max=Math.max(...data.map(x=>Number(x.value)));if(min===max){min-=.5;max+=.5;}else{min-=.15;max+=.15;}const pts=data.map((d,i)=>({x:data.length===1?170:20+i*300/(data.length-1),y:135-(Number(d.value)-min)/(max-min)*105,val:d.value}));if(pts.length>1)elem('polyline',{points:pts.map(p=>p.x+','+p.y).join(' '),fill:'none',stroke:'#78a388','stroke-width':3,'stroke-linecap':'round','stroke-linejoin':'round'});pts.forEach(p=>{elem('circle',{cx:p.x,cy:p.y,r:5,fill:'#78a388',stroke:'#fff','stroke-width':2});const t=elem('text',{x:p.x,y:Math.max(13,p.y-12),'text-anchor':'middle',fill:'#6e8877','font-size':10});t.textContent=p.val;});}
-function render(){const p=pet(),all=entries(),today=all.filter(r=>r.date===localDate()),w=all.find(r=>r.type==='weight'),walk=today.filter(r=>r.type==='walk').reduce((a,r)=>a+(Number(r.value)||0),0),up=appointments().filter(a=>a.date>=localDate());$('todayText').textContent=new Intl.DateTimeFormat('ja-JP',{month:'long',day:'numeric',weekday:'long'}).format(new Date())+' の記録';$('heroName').textContent=p.name;$('heroMeta').textContent=(p.breed||'犬・猫・その他')+'  ·  '+ageText(p.birthday);$('heroFace').textContent=petIcon(p);$('homeWeight').innerHTML=w?safe(w.value)+'<span class="unit"> kg</span>':'—<span class="unit"> kg</span>';$('weightFoot').textContent=w?pretty(w.date)+'の記録':'記録を追加しよう';$('homeWalk').innerHTML=walk+'<span class="unit"> 分</span>';$('todayRecords').innerHTML=rows(today,4);$('upcomingHome').innerHTML=up.length?'<div class="record-row"><div class="record-emoji">'+(icons[up[0].type]||'📌')+'</div><div class="record-copy"><strong>'+safe(up[0].title)+'</strong><span>'+safe(up[0].note||'忘れずにチェックしよう')+'</span></div><span class="record-time">'+pretty(up[0].date)+'</span></div>':'<p class="empty">これからの予定はありません。</p>';$('allRecords').innerHTML=rows(all.filter(x=>filter==='all'||x.type===filter));chart();$('scheduleList').innerHTML=appointments().length?appointments().map(a=>'<div class="schedule-item"><div class="schedule-date"><small>'+safe(a.date.split('-')[1])+'月</small>'+safe(a.date.split('-')[2])+'</div><div class="schedule-detail"><strong>'+(icons[a.type]||'📌')+' '+safe(a.title)+'</strong><p>'+safe(a.note||labels[a.type]||'予定')+'</p></div><button class="hint" data-del-schedule="'+a.id+'" aria-label="予定を削除">×</button></div>').join(''):'<p class="empty">まだ予定はありません。「予定を追加」から登録してね。</p>';$('profileAvatar').textContent=petIcon(p);$('profileName').textContent=p.name;$('profileInfo').textContent=(p.breed||'種類未登録')+' · '+(p.sex||'性別未登録');$('profileAge').textContent=ageText(p.birthday);$('profileDetails').innerHTML='<div class="record-row"><div class="record-copy"><strong>誕生日</strong><span>'+safe(p.birthday||'未設定')+'</span></div></div><div class="record-row"><div class="record-copy"><strong>アレルギー・注意事項</strong><span>'+safe(p.allergies||'未登録')+'</span></div></div><div class="record-row"><div class="record-copy"><strong>うちの子メモ</strong><span>'+safe(p.note||'未登録')+'</span></div></div>';$('petList').innerHTML=state.pets.map(q=>'<button class="record-row" data-pet="'+q.id+'" style="width:100%;text-align:left;background:transparent"><div class="record-emoji">'+petIcon(q)+'</div><div class="record-copy"><strong>'+safe(q.name)+'</strong><span>'+safe(q.breed||'ペット')+'</span></div>'+(q.id===state.active?'<span class="pill">選択中</span>':'<span class="tiny">切り替え ↗</span>')+'</button>').join('');}
-function modal(title,body){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modalBack').classList.add('show');const first=$('modalBody').querySelector('input,select');if(first)setTimeout(()=>first.focus({preventScroll:true}),100);}
-function close(){document.activeElement.blur();$('modalBack').classList.remove('show');}
-function formRecord(type){const choices='<option value="food">ごはん</option><option value="walk">おさんぽ</option><option value="toilet">トイレ</option><option value="condition">体調</option><option value="weight">体重</option>';modal('健康記録を追加','<form id="recordForm" class="input-stack"><label>記録する内容<select name="type" id="recordType">'+choices+'</select></label><label id="recordValueLabel">内容<input required name="value" maxlength="60"></label><label>日付<input required type="date" name="date" value="'+localDate()+'"></label><label>時刻<input type="time" name="time" value="'+new Date().toTimeString().slice(0,5)+'"></label><label>メモ（任意）<textarea name="note" maxlength="300" placeholder="気づいたことをメモ"></textarea></label><button class="primary" type="submit">この内容で記録する</button></form>');const t=$('recordType');t.value=type||'food';function adjust(){const label=$('recordValueLabel');const typ=t.value;const settings={weight:['体重（kg）','number','例：4.2'],walk:['おさんぽ時間（分）','number','例：30'],food:['食事の内容','text','例：朝ごはん・完食'],toilet:['トイレのようす','text','例：いつもどおり'],condition:['体調のようす','text','例：元気・食欲あり']};const a=settings[typ];label.firstChild.textContent=a[0];label.querySelector('input').type=a[1];label.querySelector('input').placeholder=a[2];if(a[1]==='number'){label.querySelector('input').min='0';label.querySelector('input').max='9999';label.querySelector('input').step=typ==='weight'?'0.01':'1';}else{label.querySelector('input').removeAttribute('min');label.querySelector('input').removeAttribute('max');label.querySelector('input').removeAttribute('step');}}t.onchange=adjust;adjust();$('recordForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),v=String(f.get('value')).trim(),typ=f.get('type');if(!v)return;if((typ==='weight'||typ==='walk')&&(!Number.isFinite(Number(v))||Number(v)<=0)){toast('0より大きい数値を入力してね');return;}state.records.push({id:Date.now(),petId:state.active,type:typ,value:v,date:f.get('date'),time:f.get('time'),note:String(f.get('note')).trim()});store();close();render();toast('記録を保存したよ 🐾');};}
-function formSchedule(){modal('予定を追加','<form id="scheduleForm" class="input-stack"><label>予定の種類<select name="type"><option value="visit">🏥 通院</option><option value="vaccine">💉 予防接種</option><option value="medicine">💊 お薬</option><option value="grooming">✂️ トリミング</option><option value="other">📌 その他</option></select></label><label>予定名<input required name="title" maxlength="60" placeholder="例：ワクチン接種"></label><label>予定日<input required name="date" type="date" value="'+localDate(7)+'"></label><label>メモ<textarea name="note" maxlength="300" placeholder="病院名・時間など"></textarea></label><button class="primary" type="submit">予定を保存する</button></form>');$('scheduleForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);state.schedules.push({id:Date.now(),petId:state.active,type:f.get('type'),title:String(f.get('title')).trim(),date:f.get('date'),note:String(f.get('note')).trim()});store();close();render();toast('予定を追加したよ 🐾');};}
-function formPet(edit){const p=edit?pet():{kind:'dog',name:'',breed:'',birthday:'',sex:'',note:'',allergies:''};modal(edit?'プロフィールを編集':'ペットを追加','<form id="petForm" class="input-stack"><label>名前<input required name="name" maxlength="24" value="'+safe(p.name)+'" placeholder="例：こむぎ"></label><label>種類<select name="kind"><option value="dog">🐶 犬</option><option value="cat">🐱 猫</option><option value="other">🐰 その他</option></select></label><label>犬種・猫種など<input name="breed" maxlength="50" value="'+safe(p.breed)+'" placeholder="例：トイプードル"></label><div class="form-grid"><label>誕生日<input type="date" name="birthday" value="'+safe(p.birthday)+'"></label><label>性別<select name="sex"><option>女の子</option><option>男の子</option><option>未設定</option></select></label></div><label>アレルギー・注意事項<textarea name="allergies" maxlength="300">'+safe(p.allergies)+'</textarea></label><label>うちの子メモ<textarea name="note" maxlength="300">'+safe(p.note)+'</textarea></label><button class="primary" type="submit">'+(edit?'変更を保存':'この子を登録')+'</button></form>');$('petForm').elements.kind.value=p.kind;$('petForm').elements.sex.value=p.sex||'未設定';$('petForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),obj={name:String(f.get('name')).trim(),kind:f.get('kind'),breed:String(f.get('breed')).trim(),birthday:f.get('birthday'),sex:f.get('sex'),allergies:String(f.get('allergies')).trim(),note:String(f.get('note')).trim()};if(!obj.name)return;if(edit)Object.assign(p,obj);else{obj.id=Date.now();state.pets.push(obj);state.active=obj.id;}store();close();render();toast('プロフィールを保存したよ 🐾');};}
-document.querySelectorAll('[data-tab]').forEach(el=>el.addEventListener('click',()=>tab(el.dataset.tab)));document.querySelectorAll('[data-quick]').forEach(el=>el.addEventListener('click',()=>formRecord(el.dataset.quick)));$('addRecordLink').onclick=()=>formRecord('weight');$('addScheduleLink').onclick=formSchedule;$('editPet').onclick=()=>formPet(true);$('addPet').onclick=()=>formPet(false);$('petSwitch').onclick=()=>{tab('profile');$('petList').scrollIntoView({behavior:'smooth',block:'center'});};$('closeModal').onclick=close;$('modalBack').onclick=e=>{if(e.target===$('modalBack'))close();};document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});document.querySelectorAll('[data-filter]').forEach(el=>el.onclick=()=>{filter=el.dataset.filter;document.querySelectorAll('[data-filter]').forEach(c=>c.classList.toggle('selected',c===el));render();});$('scheduleList').onclick=e=>{const btn=e.target.closest('[data-del-schedule]');if(!btn)return;if(!confirm('この予定を削除する？'))return;state.schedules=state.schedules.filter(s=>s.id!==Number(btn.dataset.delSchedule));store();render();toast('予定を削除したよ');};$('petList').onclick=e=>{const btn=e.target.closest('[data-pet]');if(!btn)return;state.active=Number(btn.dataset.pet);store();render();toast(pet().name+'の記録に切り替えたよ');};$('resetDemo').onclick=()=>{if(!confirm('このブラウザ内の記録とペット情報をすべて初期化する？'))return;state=demo();store();filter='all';document.querySelectorAll('[data-filter]').forEach(c=>c.classList.toggle('selected',c.dataset.filter==='all'));render();tab('home');toast('サンプルデータに戻したよ');};
-render();
+(() => {
+  'use strict';
+  const STORAGE_KEY = 'pokeshappo_v2';
+  const labels = {food:'ごはん', walk:'散歩', toilet:'トイレ', condition:'体調', weight:'体重', visit:'通院', vaccine:'予防接種', medicine:'お薬', grooming:'トリミング', other:'その他'};
+  const icons = {food:'🍚', walk:'🦮', toilet:'💩', condition:'💗', weight:'⚖️', visit:'🏥', vaccine:'💉', medicine:'💊', grooming:'✂️', other:'📌'};
+  const kindIcon = {dog:'🐶', cat:'🐱', other:'🐰'};
+  const $ = (id) => document.getElementById(id);
+  const escapeHTML = (str) => String(str ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const todayISO = (offset = 0) => {
+    const d = new Date();
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate() + offset);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  };
+  const nowTime = () => {
+    const d = new Date();
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  };
+  const prettyDate = (iso) => {
+    if (!iso) return '未設定';
+    const [y,m,d] = iso.split('-');
+    return `${Number(m)}月${Number(d)}日`;
+  };
+  const daysBetween = (from, to) => Math.round((to - from) / 86400000);
+  const ageText = (birthday) => {
+    if (!birthday) return '誕生日未登録';
+    const b = new Date(`${birthday}T00:00:00`);
+    const n = new Date();
+    let age = n.getFullYear() - b.getFullYear();
+    if (n.getMonth() < b.getMonth() || (n.getMonth() === b.getMonth() && n.getDate() < b.getDate())) age--;
+    return `${age}歳`;
+  };
+  const togetherText = (birthday) => {
+    if (!birthday) return '家族になった日を登録';
+    const b = new Date(`${birthday}T00:00:00`);
+    const n = new Date();
+    const diff = daysBetween(b, n) + 1;
+    return `いっしょに ${diff}日目`;
+  };
+  const defaultData = () => ({
+    activePetId: 1,
+    pets: [
+      {id:1, kind:'dog', name:'こむぎ', breed:'トイプードル', sex:'女の子', birthday:'2022-05-15', allergy:'なし', note:'ささみが大好き。お散歩では公園がお気に入り。'},
+      {id:2, kind:'dog', name:'もふ', breed:'ウェルシュ・コーギー', sex:'男の子', birthday:'2021-09-02', allergy:'鶏肉を少し控えめ', note:'ボール遊びが好き。病院では少し緊張しやすい。'}
+    ],
+    records: [
+      {id:1, petId:1, type:'food', value:'ごはん完食', note:'朝ごはんをしっかり完食', date:todayISO(), time:'07:45'},
+      {id:2, petId:1, type:'walk', value:'25', note:'公園をゆっくり一周', date:todayISO(), time:'09:30'},
+      {id:3, petId:1, type:'condition', value:'元気', note:'いつも通り。食欲あり', date:todayISO(), time:'10:00'},
+      {id:4, petId:1, type:'weight', value:'4.2', note:'', date:todayISO(), time:'08:00'},
+      {id:5, petId:1, type:'weight', value:'4.1', note:'', date:todayISO(-5), time:'08:10'},
+      {id:6, petId:1, type:'weight', value:'4.05', note:'', date:todayISO(-9), time:'08:10'},
+      {id:7, petId:1, type:'weight', value:'4.0', note:'', date:todayISO(-13), time:'08:10'},
+      {id:8, petId:1, type:'food', value:'おやつ少し', note:'ごほうびクッキー', date:todayISO(-1), time:'15:20'},
+      {id:9, petId:2, type:'weight', value:'11.3', note:'', date:todayISO(-3), time:'08:00'}
+    ],
+    schedules: [
+      {id:101, petId:1, type:'visit', title:'ワクチンの相談', memo:'かかりつけの動物病院へ', date:todayISO(12)},
+      {id:102, petId:1, type:'grooming', title:'トリミング', memo:'予約時間を確認', date:todayISO(19)},
+      {id:103, petId:2, type:'medicine', title:'ノミ・ダニ予防', memo:'月1回のお薬', date:todayISO(5)}
+    ]
+  });
+
+  let state = load();
+  let activePage = 'home';
+  let recordFilter = 'all';
+  let calendarBase = new Date();
+  calendarBase.setDate(1);
+
+  function load(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return defaultData();
+      const parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.pets)) return defaultData();
+      return parsed;
+    } catch {
+      return defaultData();
+    }
+  }
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+  function toast(msg){
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+  function currentPet(){
+    return state.pets.find(p => p.id === state.activePetId) || state.pets[0];
+  }
+  function petRecords(id = state.activePetId){
+    return state.records.filter(r => r.petId === id).sort((a,b) => `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`));
+  }
+  function petSchedules(id = state.activePetId){
+    return state.schedules.filter(s => s.petId === id).sort((a,b) => a.date.localeCompare(b.date));
+  }
+  function latestWeightFor(petId){
+    return petRecords(petId).find(r => r.type === 'weight');
+  }
+  function nextScheduleFor(petId){
+    const today = todayISO();
+    return petSchedules(petId).find(s => s.date >= today);
+  }
+  function formatRecordValue(record){
+    if (record.type === 'weight') return `${record.value}kg`;
+    if (record.type === 'walk') return `${record.value}分`;
+    return record.value;
+  }
+  function changePage(page){
+    activePage = page;
+    document.querySelectorAll('.page').forEach(el => el.classList.toggle('active', el.id === `page-${page}`));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.toggle('active', el.dataset.page === page));
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function openModal(title, html){
+    $('modalTitle').textContent = title;
+    $('modalContent').innerHTML = html;
+    $('modalBack').classList.add('show');
+    $('modalBack').setAttribute('aria-hidden', 'false');
+    const focusTarget = $('modalContent').querySelector('input,select,textarea,button');
+    if (focusTarget) setTimeout(() => focusTarget.focus({preventScroll:true}), 40);
+  }
+  function closeModal(){
+    $('modalBack').classList.remove('show');
+    $('modalBack').setAttribute('aria-hidden', 'true');
+  }
+  function renderHome(){
+    const pet = currentPet();
+    const records = petRecords();
+    const today = todayISO();
+    const todayRecords = records.filter(r => r.date === today);
+    const walkSum = todayRecords.filter(r => r.type === 'walk').reduce((acc, r) => acc + (Number(r.value) || 0), 0);
+    const weight = latestWeightFor(pet.id);
+    const next = nextScheduleFor(pet.id);
+    $('todayLabel').textContent = new Intl.DateTimeFormat('ja-JP', { month:'long', day:'numeric', weekday:'long' }).format(new Date());
+    $('homeAvatar').textContent = kindIcon[pet.kind] || '🐾';
+    $('homePetName').textContent = pet.name;
+    $('homePetMeta').textContent = `${pet.breed}・${pet.sex}・${ageText(pet.birthday)}`;
+    $('daysTogether').textContent = togetherText(pet.birthday);
+    $('nextCareTag').textContent = next ? `次の予定：${prettyDate(next.date)}` : '予定なし';
+    $('latestWeight').innerHTML = weight ? `${escapeHTML(weight.value)}<span class="unit">kg</span>` : `—<span class="unit">kg</span>`;
+    $('weightNote').textContent = weight ? `${prettyDate(weight.date)} に記録` : 'まだ体重記録がありません';
+    $('todayWalk').innerHTML = `${walkSum}<span class="unit">分</span>`;
+
+    const homeList = todayRecords.slice(0,4);
+    $('homeRecordList').innerHTML = homeList.length ? homeList.map(r => `
+      <div class="record-row">
+        <div class="icon-dot">${icons[r.type]}</div>
+        <div class="record-copy"><strong>${labels[r.type]}　${escapeHTML(formatRecordValue(r))}</strong><span>${escapeHTML(r.note || '記録しました')}</span></div>
+        <div class="record-time">${prettyDate(r.date)}<br>${escapeHTML(r.time || '')}</div>
+      </div>`).join('') : `<div class="empty">今日の記録はまだありません。<br>「かんたん記録」から追加してみよう。</div>`;
+
+    const scheduleItems = petSchedules().filter(s => s.date >= today).slice(0,2);
+    $('homeScheduleList').innerHTML = scheduleItems.length ? scheduleItems.map(scheduleCard).join('') : `<div class="panel schedule-card"><div class="schedule-copy"><strong>予定はまだありません</strong><span>通院やトリミングの予定を追加できます。</span></div></div>`;
+  }
+  function scheduleCard(s){
+    const [y,m,d] = s.date.split('-');
+    return `
+      <div class="panel schedule-card">
+        <div class="date-badge"><strong>${Number(d)}</strong><span>${Number(m)}月</span></div>
+        <div class="schedule-copy"><strong>${escapeHTML(s.title)}</strong><span>${escapeHTML(s.memo || 'メモなし')}</span></div>
+        <div class="schedule-kind">${icons[s.type]} ${labels[s.type]}</div>
+      </div>`;
+  }
+  function renderRecords(){
+    const records = petRecords();
+    const filtered = recordFilter === 'all' ? records : records.filter(r => r.type === recordFilter);
+    $('recordList').innerHTML = filtered.length ? filtered.map(r => `
+      <div class="record-row">
+        <div class="icon-dot">${icons[r.type]}</div>
+        <div class="record-copy"><strong>${labels[r.type]}　${escapeHTML(formatRecordValue(r))}</strong><span>${escapeHTML(r.note || '記録しました')}</span></div>
+        <div class="record-time">${prettyDate(r.date)}<br>${escapeHTML(r.time || '')}</div>
+      </div>`).join('') : `<div class="empty">該当する記録がありません。</div>`;
+    document.querySelectorAll('#filterChips .chip').forEach(chip => chip.classList.toggle('active', chip.dataset.filter === recordFilter));
+    drawWeightChart();
+  }
+  function drawWeightChart(){
+    const svg = $('weightChart');
+    svg.innerHTML = '';
+    const data = petRecords().filter(r => r.type === 'weight').reverse().slice(-7);
+    if (!data.length) {
+      svg.innerHTML = `<text x="170" y="90" text-anchor="middle" fill="#9f8f80" font-size="14">体重記録がまだありません</text>`;
+      return;
+    }
+    const values = data.map(d => Number(d.value));
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const pad = max === min ? 0.6 : Math.max(0.2, (max - min) * 0.35);
+    const yMin = min - pad;
+    const yMax = max + pad;
+    const W = 340, H = 170, left = 34, right = 18, top = 20, bottom = 34;
+    const plotW = W - left - right, plotH = H - top - bottom;
+    const x = i => left + (plotW * (data.length === 1 ? 0.5 : i / (data.length - 1)));
+    const y = v => top + (yMax - v) / (yMax - yMin) * plotH;
+    const ns = 'http://www.w3.org/2000/svg';
+    const make = (tag, attrs) => { const el = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v)); svg.appendChild(el); return el; };
+    [0,0.5,1].forEach(t => { const yy = top + plotH * t; make('line', {x1:left, y1:yy, x2:W-right, y2:yy, stroke:'#eadfd3', 'stroke-dasharray':'4 5'}); });
+    make('line', {x1:left, y1:top, x2:left, y2:H-bottom, stroke:'#8b715d', 'stroke-width':'1.5'});
+    make('line', {x1:left, y1:H-bottom, x2:W-right, y2:H-bottom, stroke:'#8b715d', 'stroke-width':'1.5'});
+    const path = data.map((d,i) => `${i===0?'M':'L'} ${x(i)} ${y(Number(d.value))}`).join(' ');
+    make('path', {d:path, fill:'none', stroke:'#8a654b', 'stroke-width':'3', 'stroke-linecap':'round', 'stroke-linejoin':'round'});
+    data.forEach((d,i) => {
+      make('circle', {cx:x(i), cy:y(Number(d.value)), r:'4.5', fill:'#fff', stroke:'#8a654b', 'stroke-width':'2'});
+      make('text', {x:x(i), y:H-10, 'text-anchor':'middle', fill:'#7b6b60', 'font-size':'11'}).textContent = `${Number(d.date.split('-')[1])}/${Number(d.date.split('-')[2])}`;
+    });
+    make('text', {x:left-6, y:y(min), 'text-anchor':'end', fill:'#7b6b60', 'font-size':'11'}).textContent = min.toFixed(1);
+    make('text', {x:left-6, y:y(max), 'text-anchor':'end', fill:'#7b6b60', 'font-size':'11'}).textContent = max.toFixed(1);
+    const last = data[data.length-1];
+    const lx = x(data.length-1), ly = y(Number(last.value));
+    make('rect', {x:Math.min(W-92, lx+8), y:Math.max(10, ly-18), width:'72', height:'28', rx:'14', fill:'#efe2d1'});
+    make('text', {x:Math.min(W-56, lx+44), y:Math.max(28, ly+1), 'text-anchor':'middle', fill:'#5d4433', 'font-size':'16', 'font-weight':'700'}).textContent = `${last.value} kg`;
+  }
+  function renderCalendar(){
+    const year = calendarBase.getFullYear();
+    const month = calendarBase.getMonth();
+    $('calendarLabel').textContent = `${year}年 ${month + 1}月`;
+    const grid = $('calendarGrid');
+    const weekdays = ['月','火','水','木','金','土','日'];
+    grid.innerHTML = weekdays.map(w => `<div class="weekday">${w}</div>`).join('');
+    const first = new Date(year, month, 1);
+    const startWeek = (first.getDay() + 6) % 7;
+    const startDate = new Date(year, month, 1 - startWeek);
+    const petId = state.activePetId;
+    const marks = new Set(petSchedules(petId).map(s => s.date));
+    const today = todayISO();
+    for (let i = 0; i < 35; i++) {
+      const d = new Date(startDate);
+      d.setDate(startDate.getDate() + i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const classes = ['day'];
+      if (d.getMonth() !== month) classes.push('muted');
+      if (iso === today) classes.push('today');
+      if (marks.has(iso)) classes.push('has');
+      grid.insertAdjacentHTML('beforeend', `<div class="${classes.join(' ')}">${d.getDate()}</div>`);
+    }
+  }
+  function renderSchedules(){
+    renderCalendar();
+    const list = petSchedules();
+    $('scheduleList').innerHTML = list.length ? list.map(scheduleCard).join('') : `<div class="panel schedule-card"><div class="schedule-copy"><strong>予定はまだありません</strong><span>通院やお薬などの予定を追加できます。</span></div></div>`;
+  }
+  function renderPet(){
+    const pet = currentPet();
+    $('profileAvatar').textContent = kindIcon[pet.kind] || '🐾';
+    $('profileName').textContent = pet.name;
+    $('profileMeta').textContent = `${pet.breed}・${pet.sex}・${ageText(pet.birthday)}`;
+    $('profileInfoList').innerHTML = `
+      <div class="info-item"><div class="info-label">誕生日</div><div class="info-value">${escapeHTML(pet.birthday ? `${pet.birthday.split('-').map((x,i)=>i===0?x+'年':i===1?Number(x)+'月':Number(x)+'日').join('')}` : '未登録')}</div></div>
+      <div class="info-item"><div class="info-label">アレルギー</div><div class="info-value">${escapeHTML(pet.allergy || 'なし')}</div></div>
+      <div class="info-item"><div class="info-label">うちの子メモ</div><div class="info-value"><div class="note-box">${escapeHTML(pet.note || 'メモなし')}</div></div></div>`;
+    $('petList').innerHTML = state.pets.map(p => {
+      const active = p.id === state.activePetId;
+      return `<div class="pet-row">
+        <div class="avatar-sm">${kindIcon[p.kind] || '🐾'}</div>
+        <div><strong>${escapeHTML(p.name)}${active ? '　<span style="font-size:12px;color:#8e6a52">（表示中）</span>' : ''}</strong><span>${escapeHTML(`${p.breed}・${p.sex}・${ageText(p.birthday)}`)}</span></div>
+        <button class="arrow" data-switch-pet="${p.id}">${active ? '✓' : '〉'}</button>
+      </div>`;
+    }).join('');
+    document.querySelectorAll('[data-switch-pet]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.activePetId = Number(btn.dataset.switchPet);
+        save();
+        renderAll();
+        toast('表示するペットを切り替えたよ');
+      });
+    });
+  }
+  function renderAll(){
+    renderHome();
+    renderRecords();
+    renderSchedules();
+    renderPet();
+  }
+
+  function openRecordForm(defaultType = 'food'){
+    openModal('記録を追加', `
+      <form id="recordForm" class="form-stack">
+        <label class="field-label">記録の種類
+          <select name="type" id="recordType">
+            <option value="food">ごはん</option>
+            <option value="walk">散歩</option>
+            <option value="toilet">トイレ</option>
+            <option value="condition">体調</option>
+            <option value="weight">体重</option>
+          </select>
+        </label>
+        <label class="field-label">内容
+          <input name="value" id="recordValue" required maxlength="40" placeholder="例：ごはん完食">
+        </label>
+        <div class="form-row">
+          <label class="field-label">日付
+            <input type="date" name="date" value="${todayISO()}" required>
+          </label>
+          <label class="field-label">時刻
+            <input type="time" name="time" value="${nowTime()}" required>
+          </label>
+        </div>
+        <label class="field-label">メモ
+          <textarea name="note" placeholder="気づいたことをメモ"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="ghost-btn" id="cancelRecord">キャンセル</button>
+          <button type="submit" class="primary-btn">保存する</button>
+        </div>
+      </form>
+    `);
+    const typeEl = $('recordType');
+    const valueEl = $('recordValue');
+    const preset = {
+      food:'ごはん完食', walk:'25', toilet:'排便あり', condition:'元気', weight:'4.2'
+    };
+    function updatePlaceholder(){
+      valueEl.placeholder = typeEl.value === 'walk' ? '例：25（分）' : typeEl.value === 'weight' ? '例：4.2' : '内容を入力';
+      valueEl.value = preset[typeEl.value] || '';
+    }
+    typeEl.value = defaultType;
+    updatePlaceholder();
+    typeEl.addEventListener('change', updatePlaceholder);
+    $('cancelRecord').onclick = closeModal;
+    $('recordForm').onsubmit = (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.currentTarget);
+      state.records.unshift({
+        id: Date.now(),
+        petId: state.activePetId,
+        type: String(fd.get('type')),
+        value: String(fd.get('value')).trim(),
+        note: String(fd.get('note')).trim(),
+        date: String(fd.get('date')),
+        time: String(fd.get('time'))
+      });
+      save();
+      closeModal();
+      renderAll();
+      toast('記録を追加したよ');
+    };
+  }
+
+  function openScheduleForm(){
+    openModal('予定を追加', `
+      <form id="scheduleForm" class="form-stack">
+        <label class="field-label">予定の種類
+          <select name="type">
+            <option value="visit">通院</option>
+            <option value="vaccine">予防接種</option>
+            <option value="medicine">お薬</option>
+            <option value="grooming">トリミング</option>
+            <option value="other">その他</option>
+          </select>
+        </label>
+        <label class="field-label">予定名
+          <input name="title" required maxlength="40" placeholder="例：ワクチン接種">
+        </label>
+        <label class="field-label">日付
+          <input type="date" name="date" value="${todayISO(7)}" required>
+        </label>
+        <label class="field-label">メモ
+          <textarea name="memo" placeholder="場所や持ち物など"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="ghost-btn" id="cancelSchedule">キャンセル</button>
+          <button type="submit" class="primary-btn">保存する</button>
+        </div>
+      </form>
+    `);
+    $('cancelSchedule').onclick = closeModal;
+    $('scheduleForm').onsubmit = (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.currentTarget);
+      state.schedules.push({
+        id: Date.now(),
+        petId: state.activePetId,
+        type: String(fd.get('type')),
+        title: String(fd.get('title')).trim(),
+        memo: String(fd.get('memo')).trim(),
+        date: String(fd.get('date'))
+      });
+      save();
+      closeModal();
+      renderAll();
+      toast('予定を追加したよ');
+    };
+  }
+
+  function openPetForm(editing = true){
+    const pet = editing ? currentPet() : {kind:'dog', name:'', breed:'', sex:'', birthday:'', allergy:'', note:''};
+    openModal(editing ? 'プロフィールを編集' : 'ペットを追加', `
+      <form id="petForm" class="form-stack">
+        <div class="form-row">
+          <label class="field-label">名前
+            <input name="name" value="${escapeHTML(pet.name)}" required maxlength="24" placeholder="例：こむぎ">
+          </label>
+          <label class="field-label">種類
+            <select name="kind">
+              <option value="dog">犬</option>
+              <option value="cat">猫</option>
+              <option value="other">その他</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label class="field-label">犬種・猫種など
+            <input name="breed" value="${escapeHTML(pet.breed)}" maxlength="40" placeholder="例：トイプードル">
+          </label>
+          <label class="field-label">性別
+            <input name="sex" value="${escapeHTML(pet.sex)}" maxlength="20" placeholder="例：女の子">
+          </label>
+        </div>
+        <label class="field-label">誕生日
+          <input type="date" name="birthday" value="${escapeHTML(pet.birthday)}">
+        </label>
+        <label class="field-label">アレルギー
+          <input name="allergy" value="${escapeHTML(pet.allergy)}" maxlength="40" placeholder="例：なし">
+        </label>
+        <label class="field-label">うちの子メモ
+          <textarea name="note" placeholder="好きなものや気をつけたいこと">${escapeHTML(pet.note)}</textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="ghost-btn" id="cancelPet">キャンセル</button>
+          <button type="submit" class="primary-btn">保存する</button>
+        </div>
+      </form>
+    `);
+    $('petForm').kind.value = pet.kind;
+    $('cancelPet').onclick = closeModal;
+    $('petForm').onsubmit = (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.currentTarget);
+      const payload = {
+        kind: String(fd.get('kind')),
+        name: String(fd.get('name')).trim(),
+        breed: String(fd.get('breed')).trim(),
+        sex: String(fd.get('sex')).trim(),
+        birthday: String(fd.get('birthday')).trim(),
+        allergy: String(fd.get('allergy')).trim(),
+        note: String(fd.get('note')).trim()
+      };
+      if (editing) {
+        const idx = state.pets.findIndex(p => p.id === state.activePetId);
+        state.pets[idx] = {...state.pets[idx], ...payload};
+      } else {
+        const id = Date.now();
+        state.pets.push({id, ...payload});
+        state.activePetId = id;
+      }
+      save();
+      closeModal();
+      renderAll();
+      toast(editing ? 'プロフィールを更新したよ' : 'ペットを追加したよ');
+    };
+  }
+
+  function bind(){
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => changePage(btn.dataset.page)));
+    document.querySelectorAll('[data-go]').forEach(btn => btn.addEventListener('click', () => changePage(btn.dataset.go)));
+    document.querySelectorAll('.quick-btn').forEach(btn => btn.addEventListener('click', () => openRecordForm(btn.dataset.record)));
+    $('addRecordBtnTop').onclick = () => openRecordForm('food');
+    $('addRecordBtn').onclick = () => openRecordForm('food');
+    $('addScheduleBtn').onclick = openScheduleForm;
+    $('editPetBtn').onclick = () => openPetForm(true);
+    $('addPetBtn').onclick = () => openPetForm(false);
+    $('settingsBtn').onclick = () => toast('設定画面は今後追加予定です');
+    $('closeModal').onclick = closeModal;
+    $('modalBack').addEventListener('click', (e) => { if (e.target === $('modalBack')) closeModal(); });
+    $('prevMonth').onclick = () => { calendarBase.setMonth(calendarBase.getMonth() - 1); renderSchedules(); };
+    $('nextMonth').onclick = () => { calendarBase.setMonth(calendarBase.getMonth() + 1); renderSchedules(); };
+    $('resetBtn').onclick = () => {
+      if (!confirm('デモデータを初期状態に戻しますか？')) return;
+      state = defaultData();
+      save();
+      calendarBase = new Date();
+      calendarBase.setDate(1);
+      renderAll();
+      toast('データを初期化したよ');
+    };
+    $('filterChips').addEventListener('click', (e) => {
+      const chip = e.target.closest('[data-filter]');
+      if (!chip) return;
+      recordFilter = chip.dataset.filter;
+      renderRecords();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  }
+
+  bind();
+  renderAll();
 })();
 </script>
 </body>
