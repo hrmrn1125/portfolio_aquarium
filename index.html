@@ -1,599 +1,226 @@
 <!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#e6dac5">
-<meta name="description" content="Companion Ledger | 小さな家族の健康帳">
-<title>Companion Ledger | 小さな家族の健康帳</title>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#e7ddca"><meta name="description" content="しっぽ綴り｜ペットの日々の健康記録"><title>しっぽ綴り | ペット健康手帳</title>
 <style>
-:root{
-  --canvas:#d5b78a;
-  --app:#ece1cc;
-  --paper:#f5ecdb;
-  --paper-2:#f8f1e3;
-  --panel:#f7efdf;
-  --ink:#342820;
-  --muted:#7a6a5b;
-  --line:#b89d77;
-  --line-soft:#d8c8af;
-  --accent:#806240;
-  --accent-deep:#62492f;
-  --forest:#566a58;
-  --shadow:0 12px 34px rgba(68,45,26,.16);
-  --header-serif:"Iowan Old Style","Yu Mincho","Hiragino Mincho ProN","Noto Serif JP",serif;
-  --sans:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
-}
-*{box-sizing:border-box}
-html,body{margin:0;background:linear-gradient(180deg,#b49463 0%,#cab087 12%,#d8c19e 20%,#d8c19e 100%);font-family:var(--sans);color:var(--ink)}
-body{min-height:100vh}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer;border:none;background:transparent;color:inherit}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-input,select,textarea{width:100%;max-width:100%;min-width:0;border:1px solid #c7b18d;background:#fffdf8;color:var(--ink);border-radius:2px;padding:12px 12px;font-size:16px;min-height:48px;box-shadow:inset 0 0 0 1px #efe4d1}
-textarea{min-height:112px;resize:vertical}
-img{display:block;max-width:100%}
-svg{display:block}
-.hidden{display:none!important}
-.app-shell{max-width:460px;margin:0 auto;min-height:100dvh;background:
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,.28), transparent 28%),
-    radial-gradient(circle at 80% 15%, rgba(255,255,255,.20), transparent 20%),
-    radial-gradient(circle at 10% 60%, rgba(118,96,62,.05), transparent 20%),
-    linear-gradient(90deg,rgba(117,84,49,.16) 0 1px, transparent 1px 100%),
-    radial-gradient(#9e8864 0.6px, transparent 0.75px) 0 0/7px 7px,
-    var(--app);
-  border-left:1px solid rgba(98,73,47,.35);border-right:1px solid rgba(98,73,47,.35);box-shadow:0 0 46px rgba(45,29,14,.18);position:relative;padding:18px 16px calc(110px + env(safe-area-inset-bottom));overflow-x:hidden}
-.app-shell::before,.app-shell::after{content:"";position:absolute;top:0;bottom:0;width:1px;background:rgba(110,83,54,.28);pointer-events:none}
-.app-shell::before{left:9px}.app-shell::after{right:9px}
-.header{display:flex;align-items:center;gap:14px;justify-content:space-between;padding:10px 0 14px;border-bottom:3px double rgba(96,70,42,.55);position:sticky;top:0;background:linear-gradient(180deg,rgba(236,225,204,.97),rgba(236,225,204,.95));backdrop-filter:blur(8px);z-index:20}
-.brand-wrap{display:flex;align-items:center;gap:12px;min-width:0}
-.brand-mark{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#f5edde,#e9ddc8);border:2px solid var(--line);box-shadow:inset 0 0 0 2px #f8f1e4, var(--shadow);color:var(--accent-deep);flex:0 0 auto}
-.brand-mark .icon{width:28px;height:28px}
-.brand-title{font-family:var(--header-serif);font-size:22px;font-weight:700;letter-spacing:.02em;line-height:1.05}
-.brand-sub{font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:3px}
-.picker-btn{display:flex;align-items:center;gap:10px;padding:11px 12px;border:2px solid var(--line);background:linear-gradient(180deg,#f7efdf,#f0e4d0);box-shadow:inset 0 0 0 1px #fff5e7;min-width:112px;justify-content:space-between;font-size:14px;flex:0 0 auto}
-.page{display:none;padding-top:18px}.page.active{display:block}
-.page-kicker{font-family:var(--header-serif);font-size:13px;letter-spacing:.20em;text-transform:uppercase;color:#6f5f50;margin-bottom:6px}
-.page-title{font-family:var(--header-serif);font-size:34px;line-height:1.15;font-weight:700;margin:0 0 10px;letter-spacing:.02em}
-.rule{display:flex;align-items:center;gap:8px;margin:6px 0 18px;color:var(--line)}
-.rule::before,.rule::after{content:"";height:1px;background:linear-gradient(90deg,transparent, currentColor, transparent);flex:1}
-.rule .diamond{width:10px;height:10px;background:currentColor;transform:rotate(45deg);flex:0 0 auto;opacity:.95}
-.frontispiece{margin:0 0 16px;padding:6px 0 2px;color:#8a6d49}
-.frontispiece svg{width:100%;height:auto}
-.panel{position:relative;background:linear-gradient(180deg,rgba(250,245,234,.82),rgba(244,236,219,.92));border:3px double var(--line);box-shadow:inset 0 0 0 1px #eee1ca, var(--shadow)}
-.card{padding:14px}
-.hero-card{display:grid;grid-template-columns:118px minmax(0,1fr);gap:16px;align-items:center}
-.frame{position:relative;background:linear-gradient(180deg,#f0e4cd,#e7d4b3);border:3px double var(--line);padding:8px;box-shadow:inset 0 0 0 1px #fff5e9}
-.frame::before,.frame::after{content:"";position:absolute;width:22px;height:22px;border:3px solid var(--line);border-left:none;border-bottom:none;top:8px;left:8px;opacity:.75}
-.frame::after{top:auto;left:auto;right:8px;bottom:8px;transform:rotate(180deg)}
-.portrait-frame{aspect-ratio:1/1.05;border-radius:2px;overflow:hidden;background:linear-gradient(180deg,#f6eedf,#ebddc6)}
-.portrait-frame .portrait-inner{width:100%;height:100%;display:grid;place-items:center;overflow:hidden}
-.portrait-photo{width:100%;height:100%;object-fit:cover;filter:sepia(.55) contrast(1.02) saturate(.55) brightness(1.03)}
-.portrait-figure{width:100%;height:100%;color:#5b4839}
-.pet-name{font-family:var(--header-serif);font-size:28px;font-weight:700;letter-spacing:.03em;line-height:1.1;margin:0 0 10px}
-.pet-meta{font-size:16px;color:#51453b;line-height:1.45}
-.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
-.stat-box{padding:12px;background:linear-gradient(180deg,rgba(248,242,230,.86),rgba(241,233,217,.96));border:2px solid rgba(184,157,119,.75);box-shadow:inset 0 0 0 1px #f9f0df}
-.stat-label{font-size:12px;color:var(--muted);margin-bottom:6px}
-.stat-value{font-family:var(--header-serif);font-size:28px;color:var(--forest);font-weight:700;line-height:1}
-.stat-value span{font-size:14px;margin-left:4px;color:var(--muted);font-family:var(--sans)}
-.section-head{display:flex;align-items:end;justify-content:space-between;gap:8px;margin:22px 0 10px}
-.section-title{font-family:var(--header-serif);font-size:28px;font-weight:700;line-height:1.1;margin:0}
-.section-action{font-size:16px;font-weight:700;color:var(--accent-deep)}
-.primary-btn,.secondary-btn,.ghost-btn,.mini-btn,.fab{border:2px solid var(--line);box-shadow:inset 0 0 0 1px rgba(255,245,229,.9);transition:.18s ease}
-.primary-btn:hover,.secondary-btn:hover,.ghost-btn:hover,.mini-btn:hover,.picker-btn:hover,.nav-btn:hover,.fab:hover{filter:brightness(.98)}
-.primary-btn{width:100%;display:flex;justify-content:center;align-items:center;gap:10px;padding:14px 16px;background:linear-gradient(180deg,#76563a,#5b432d);color:#fff7ee;font-weight:700;font-size:17px}
-.primary-btn .icon,.section-action .icon,.mini-btn .icon,.fab .icon,.nav-btn .icon,.list-icon .icon,.record-chip .icon,.picker-btn .icon{width:1.22em;height:1.22em}
-.secondary-btn{width:100%;display:flex;justify-content:center;align-items:center;gap:10px;padding:14px 16px;background:linear-gradient(180deg,#f8f1e5,#eadbc2);color:var(--ink);font-weight:700}
-.ghost-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(248,240,226,.78);font-weight:700}
-.mini-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;background:linear-gradient(180deg,#f7efdf,#e8dbc3);font-size:14px;font-weight:700}
-.button-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.quick-record{margin-top:10px}
-.schedule-preview,.record-row,.pet-row,.event-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px;border-bottom:1px solid rgba(184,157,119,.45)}
-.record-row:last-child,.pet-row:last-child,.event-row:last-child{border-bottom:none}
-.list-icon{display:grid;place-items:center;width:40px;height:40px;border:2px solid rgba(184,157,119,.72);background:linear-gradient(180deg,#f8f1e2,#ece0c9);color:var(--accent-deep)}
-.list-icon .icon{width:25px;height:25px}
-.entry-title{font-size:18px;font-weight:700;line-height:1.35}
-.entry-sub,.entry-meta{font-size:13px;color:var(--muted);line-height:1.45}
-.date-pill{display:grid;place-items:center;width:60px;padding:8px 4px;border:2px solid rgba(184,157,119,.75);background:linear-gradient(180deg,#f7efdf,#e7d7bd)}
-.date-pill strong{font-family:var(--header-serif);font-size:28px;line-height:1}.date-pill small{font-size:12px;color:var(--muted)}
-.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);padding:5px 8px;border:1px solid rgba(184,157,119,.55);background:rgba(251,246,237,.75)}
-.empty{padding:18px;text-align:center;color:var(--muted)}
-.filter-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.filter-row::-webkit-scrollbar{display:none}
-.record-chip{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;padding:10px 13px;border:2px solid var(--line);background:linear-gradient(180deg,#f7efdf,#eaddc5);font-weight:700;font-size:15px;color:#55473a}
-.record-chip.active{background:linear-gradient(180deg,#6e5338,#5a432e);color:#fff8ef}
-.chart-card{padding:12px 12px 8px}.chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.chart-head .section-action{font-size:15px}
-.chart{width:100%;height:auto}
-.chart-foot{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding:0 8px 4px}
-.calendar-card{padding:14px}.calendar-head{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin-bottom:12px}.month-title{font-family:var(--header-serif);font-size:26px;text-align:center}
-.icon-square{width:44px;height:44px;display:grid;place-items:center;border:2px solid var(--line);background:linear-gradient(180deg,#f8f1e5,#eadbc2);color:var(--accent-deep)}
-.icon-square .icon{width:24px;height:24px}
-.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.calendar-grid .wk{font-size:12px;color:var(--muted);text-align:center;padding-bottom:4px}.calendar-grid .day{min-height:44px;border:1px solid rgba(184,157,119,.55);background:rgba(251,245,236,.72);display:grid;place-items:center;position:relative;font-size:14px}.calendar-grid .day.out{opacity:.38}.calendar-grid .day.today{border:2px solid var(--accent)}.calendar-grid .day.has::after{content:"";position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:var(--accent-deep)}
-.pet-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.profile-grid{display:grid;gap:12px;margin-top:12px}.profile-line{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid rgba(184,157,119,.42)}.profile-line:last-child{border-bottom:none}.profile-label{font-size:14px;color:var(--muted)}.profile-value{font-size:16px;line-height:1.6}
-.pet-row{width:100%;text-align:left;background:transparent}.pet-row small{display:block;color:var(--muted);font-size:12px}.pet-row .entry-title{font-size:16px}
-.delete-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;color:#8d6b57}.delete-btn .icon{width:22px;height:22px}
-.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(460px,100%);padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(236,225,204,0),rgba(236,225,204,.96) 18%,rgba(236,225,204,.98));backdrop-filter:blur(8px);z-index:22}
-.nav-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center;padding:12px 8px 8px;background:rgba(234,221,198,.95);border-top:2px solid rgba(98,73,47,.5);box-shadow:0 -4px 0 rgba(255,249,238,.6) inset}
-.nav-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 2px;color:#8d755d;font-weight:700;font-size:13px}
-.nav-btn.active{color:#32271f}.nav-btn .icon{width:1.45em;height:1.45em}
-.fab{position:absolute;left:50%;transform:translateX(-50%);top:-14px;background:linear-gradient(180deg,#6f5338,#5a412c);color:#fff7ef;padding:12px 18px;border-radius:999px;display:flex;align-items:center;gap:9px;font-weight:700;box-shadow:0 10px 18px rgba(62,43,27,.25)}
-.modal-backdrop{position:fixed;inset:0;background:rgba(42,28,17,.42);display:none;align-items:center;justify-content:center;padding:20px;z-index:40}.modal-backdrop.show{display:flex}
-.modal{width:min(100%, 420px);max-height:min(88dvh, 760px);overflow:auto;background:linear-gradient(180deg,#f7efdf,#efe1c6);border:3px double var(--line);box-shadow:0 18px 48px rgba(39,24,12,.3);padding:18px}
-.modal-head{display:flex;align-items:start;justify-content:space-between;gap:10px;padding-bottom:12px;border-bottom:2px solid rgba(184,157,119,.6);margin-bottom:14px}.modal-title{font-family:var(--header-serif);font-size:28px;line-height:1.1;font-weight:700}.modal-close{display:grid;place-items:center;width:52px;height:52px;border:2px solid var(--line);background:rgba(250,243,232,.7);font-size:40px;line-height:1;color:#4d3c2f;flex:0 0 auto}
-.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:grid;gap:7px;min-width:0}.field.full{grid-column:1 / -1}.field label{font-size:16px;font-weight:700}.field small{color:var(--muted)}
-.form-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
-input[type="file"]{display:none}
-.action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.action-card{display:flex;align-items:center;gap:10px;padding:14px;background:linear-gradient(180deg,#f8f1e6,#eadcc3);border:2px solid var(--line);font-weight:700;text-align:left}.action-card .icon{width:26px;height:26px;color:var(--accent-deep)}
-.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(14px);bottom:98px;background:#4b3725;color:#fff7ed;padding:10px 14px;border-radius:999px;box-shadow:0 12px 24px rgba(0,0,0,.22);font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:50}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@media (max-width:430px){
-  .page-title{font-size:32px}
-  .hero-card{grid-template-columns:100px minmax(0,1fr)}
-  .pet-name{font-size:26px}
-}
-@media (max-width:390px){
-  .app-shell{padding-left:14px;padding-right:14px}
-  .brand-title{font-size:20px}
-  .picker-btn{min-width:104px;padding-inline:10px}
-  .page-title{font-size:30px}
-  .section-title{font-size:26px}
-  .hero-card{grid-template-columns:1fr;justify-items:start}
-  .stat-grid,.button-row,.action-grid,.form-actions,.form-grid{grid-template-columns:1fr}
-  .profile-line{grid-template-columns:1fr}
+:root{--canvas:#e7ddca;--paper:#f7f0e2;--ivory:#fbf8f0;--ink:#342d27;--muted:#786e62;--line:#d8c9ad;--forest:#566752;--rust:#9a604b;--gold:#aa8d5f;--shadow:0 12px 38px #4a382920;--serif:"Yu Mincho","Hiragino Mincho ProN","Noto Serif JP",Georgia,serif;--sans:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif}
+*{box-sizing:border-box}html{background:var(--canvas)}body{margin:0;font-family:var(--sans);color:var(--ink);background:radial-gradient(circle at 10% 20%,#f4ecda 0,transparent 32%),repeating-linear-gradient(0deg,#ffffff0a 0 1px,transparent 1px 4px),var(--canvas);font-size:14px;line-height:1.55}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;background:transparent;color:inherit}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--rust);outline-offset:3px}input,select,textarea{width:100%;min-height:43px;border:1px solid #cdbda5;background:#fffcf5;color:var(--ink);border-radius:5px;padding:10px 12px;font-size:16px}textarea{resize:vertical;min-height:84px}svg{display:block}.icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.65;flex-shrink:0}.app{position:relative;max-width:460px;margin:auto;min-height:100dvh;padding:18px 16px calc(90px + env(safe-area-inset-bottom));background:radial-gradient(#9d866c12 .7px,transparent .8px) 0 0/5px 5px,linear-gradient(110deg,#fffdf850,#0000 70%),var(--paper);box-shadow:0 0 55px #3a271724;border-left:1px solid #d0bda3;border-right:1px solid #d0bda3}.app:before{content:"";position:absolute;left:7px;top:0;bottom:0;width:1px;background:#b9a27b6b;pointer-events:none}.header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 3px 17px;border-bottom:1px solid #b8a47f}.brand{display:flex;align-items:center;gap:10px}.brand-mark{width:38px;height:38px;border:1px solid var(--gold);color:var(--forest);border-radius:50%;display:grid;place-items:center}.brand-mark .icon{width:25px;height:25px}.brand h1{font:700 24px/1.15 var(--serif);letter-spacing:.09em;margin:0}.brand small{display:block;color:#8b7759;letter-spacing:.20em;font:10px/1.5 Georgia,serif;margin-top:4px}.pet-switch{display:flex;align-items:center;gap:6px;border:1px solid #c4b18d;border-radius:4px;padding:8px 9px;font-size:12px;background:#f8f2e5}.pet-switch .icon{width:15px;height:15px}.page{display:none}.page.active{display:block}.page-heading{display:flex;align-items:center;justify-content:space-between;margin:23px 0 13px}.eyebrow{color:#8b775f;font:11px Georgia,serif;letter-spacing:.18em}.page-title{font:700 27px/1.4 var(--serif);letter-spacing:.06em;margin:5px 0 0}.folio{font:italic 12px Georgia,serif;color:#9b886e}.rule{display:flex;align-items:center;gap:10px;color:var(--gold);margin:17px 2px}.rule:before,.rule:after{content:"";height:1px;background:#baa48180;flex:1}.rule .icon{width:17px;height:17px;stroke-width:1.2}.panel{border:1px solid #bfa886;background:#fffcf5bd;position:relative;box-shadow:0 3px 10px #58422f09}.panel.corners:before,.panel.corners:after{content:"";position:absolute;pointer-events:none;width:26px;height:26px;border-color:#b1976e}.panel.corners:before{left:6px;top:6px;border-top:1px solid;border-left:1px solid}.panel.corners:after{right:6px;bottom:6px;border-bottom:1px solid;border-right:1px solid}.pet-cover{padding:24px 17px 20px;display:grid;grid-template-columns:100px minmax(0,1fr);gap:17px;align-items:center;overflow:hidden}.portrait{width:100px;height:116px;border:5px solid #f8f3e8;outline:1px solid #b09a77;background:radial-gradient(ellipse at 50% 40%,#f5e8d3 0 48%,#e3d5be 70%);display:grid;place-items:center;color:#63533f}.portrait .icon{width:74px;height:74px;stroke-width:1.25}.pet-cover h2{font:700 27px var(--serif);margin:5px 0 4px}.pet-meta{font-size:12px;color:var(--muted);line-height:1.8;overflow-wrap:anywhere}.micro{font-size:11px;color:var(--muted);letter-spacing:.08em}.label-plate{font:11px Georgia,serif;letter-spacing:.16em;color:var(--rust);text-transform:uppercase}.section-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:23px 0 10px}.section-head h2{font:700 18px var(--serif);letter-spacing:.05em;margin:0}.action-link{font-size:12px;color:var(--forest);font-weight:700;padding:7px 0;text-decoration:underline;text-underline-offset:4px}.quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.quick-btn{min-width:0;border:1px solid #cbb99b;background:#faf5e9;padding:15px 4px 12px;display:grid;justify-items:center;gap:9px;transition:background .15s}.quick-btn:active{background:#eae0ca}.quick-btn .icon{width:28px;height:28px;color:var(--forest);stroke-width:1.5}.quick-btn span{font-size:12px;font-weight:700;white-space:nowrap}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.metric{border:1px solid #d4c4a9;background:#fffaf0;padding:12px}.metric-label{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted)}.metric-label .icon{width:17px;height:17px}.metric-value{font:700 27px Georgia,var(--serif);margin:5px 0 0}.metric-value span{font:12px var(--sans);margin-left:3px}.metric-sub{color:var(--muted);font-size:10px;margin-top:3px}.record-list{padding:0 13px}.record{display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:9px;min-height:68px;padding:11px 0;border-bottom:1px solid #e1d4bf}.record:last-child{border:0}.record .record-icon{color:var(--rust)}.record .record-icon .icon{width:23px;height:23px}.record-main{min-width:0}.record-main strong{display:block;font-size:13px}.record-main p{margin:3px 0 0;color:var(--muted);font-size:11px;line-height:1.4;overflow-wrap:anywhere}.record-date{font:11px Georgia,var(--sans);color:var(--muted);text-align:right;white-space:nowrap}.empty{font-size:12px;color:var(--muted);padding:22px 10px;text-align:center}.schedule-preview{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:10px;padding:14px}.date-stamp{border:1px solid #ccb596;background:#f4ead8;text-align:center;padding:5px 3px;line-height:1.1}.date-stamp strong{display:block;font:700 19px Georgia,var(--serif)}.date-stamp small{font-size:10px;color:var(--muted)}.preview-title{font-size:13px;font-weight:700}.preview-sub{font-size:11px;color:var(--muted);margin-top:3px}.filters{display:flex;gap:6px;overflow:auto;scrollbar-width:none;margin:0 0 12px}.filters::-webkit-scrollbar{display:none}.filter{flex-shrink:0;border:1px solid #c9b69a;background:#fdf9ee;font-size:12px;padding:8px 11px}.filter.active{background:var(--forest);border-color:var(--forest);color:#fff}.chart-panel{padding:14px}.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}.chart-head h3{font:700 16px var(--serif);margin:0}.chart{width:100%;height:142px}.chart-foot{display:flex;justify-content:space-between;color:var(--muted);font-size:10px}.calendar{padding:12px}.month-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.month-head strong{font:700 17px Georgia,var(--serif)}.month-btn{border:1px solid #d4c2a5;width:35px;height:32px;background:#faf5e8;display:grid;place-items:center}.month-btn .icon{width:15px;height:15px}.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}.weekday{font:11px Georgia,var(--sans);color:var(--muted);text-align:center;padding:7px 0}.day{font:12px Georgia,var(--sans);min-height:37px;display:grid;place-items:center;position:relative;border:1px solid transparent}.day.other{color:#bcb0a2}.day.current{border-color:#9a785f;background:#f2e7d3}.day.marked:after{content:"";width:5px;height:5px;position:absolute;bottom:2px;border-radius:50%;background:var(--rust)}.agenda{display:grid;gap:8px}.agenda-item{display:grid;grid-template-columns:44px 1fr 25px;align-items:center;gap:11px;padding:12px}.agenda-item .entry-title{font-size:13px;font-weight:700}.agenda-item .entry-note{font-size:11px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}.delete-btn{color:#806d5c;padding:4px}.delete-btn .icon{width:16px;height:16px}.profile{padding:16px}.profile-head{display:flex;align-items:center;gap:14px}.profile-head .portrait{width:78px;height:88px;flex:0 0 78px}.profile-head .portrait .icon{width:55px;height:55px}.profile-head h2{margin:0 0 4px;font:700 24px var(--serif)}.profile-field{display:grid;grid-template-columns:90px 1fr;gap:8px;border-top:1px solid #e1d3be;padding:12px 0;font-size:13px}.profile-field:first-of-type{margin-top:15px}.profile-field span:first-child{color:var(--muted)}.profile-field span:last-child{overflow-wrap:anywhere}.pet-rows{padding:0 12px}.pet-row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #e1d3be;padding:12px 0;text-align:left}.pet-row:last-child{border:0}.pet-row strong{font-size:14px}.pet-row small{display:block;color:var(--muted);font-size:11px}.pet-row .icon{width:18px;height:18px}.primary{width:100%;background:var(--forest);color:white;padding:12px 16px;min-height:44px;font-weight:700;letter-spacing:.06em}.secondary{width:100%;background:#faf3e5;border:1px solid #c8b395;padding:12px 16px;min-height:44px}.small-note{color:var(--muted);font-size:10px;margin-top:13px;line-height:1.6}.nav{position:fixed;z-index:5;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;display:grid;grid-template-columns:repeat(4,1fr);background:#f7f0e6f5;backdrop-filter:blur(12px);border-top:1px solid #b8a17d;padding:8px 9px calc(8px + env(safe-area-inset-bottom))}.nav button{display:grid;place-items:center;gap:4px;padding:5px 2px;color:#85725e;font-size:10px}.nav button .icon{width:20px;height:20px}.nav button.active{color:var(--forest);font-weight:800}.modal-back{position:fixed;z-index:20;inset:0;background:#30271cb0;display:none;align-items:flex-end;justify-content:center;padding:12px 10px max(12px,env(safe-area-inset-bottom))}.modal-back.visible{display:flex}.modal{width:min(100%,460px);max-height:91dvh;overflow:auto;background:var(--paper);border:3px double #ae9572;padding:18px;box-shadow:0 25px 70px #23180e55}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modal-head h2{font:700 22px var(--serif);margin:0}.close{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--line)}.close .icon{width:20px;height:20px}.form{display:grid;gap:13px}.field{display:grid;gap:5px;font-size:12px;font-weight:700}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}.toast{position:fixed;z-index:40;bottom:92px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:10px 15px;font-size:12px;display:none;white-space:nowrap;max-width:90%;text-align:center}.toast.show{display:block}@media(min-width:540px){.app{padding-top:30px}}@media(max-width:350px){.app{padding-left:11px;padding-right:11px}.pet-cover{grid-template-columns:82px 1fr;gap:10px}.portrait{width:82px;height:100px}.brand h1{font-size:21px}.quick-btn{padding:13px 1px}.quick-btn span{font-size:11px}}
+
+/* 1840s etching-inspired surface system: engraved ornament, thin plate borders, and warmer aged paper */
+:root{--canvas:#d4c49f;--paper:#efe1bd;--ivory:#f6e8c4;--ink:#30251b;--muted:#665442;--line:#c1a67b;--forest:#59472f;--rust:#775038;--gold:#8d7044;--shadow:0 9px 25px #44301b36}
+html{background:#aa8f63}
+body{background:radial-gradient(ellipse at 50% -5%,#e4d4b0 0%,#bba075 100%);color:var(--ink)}
+.app{background:linear-gradient(90deg,#ad8f6150 0 2px,transparent 3px),radial-gradient(ellipse at 25% 15%,#fff5da88,transparent 42%),radial-gradient(#73522c13 .65px, transparent 1.3px) 0 0 / 4px 6px,radial-gradient(#ad8f5f18 .7px, transparent 1.1px) 2px 3px / 7px 9px,linear-gradient(98deg,#f3e6c8,#ebdab5 54%,#f4e7c8);border-left:3px double #8c7149;border-right:3px double #8c7149;box-shadow:inset 0 0 35px #8b6d3c26,0 0 55px #30211146}
+.app:before{left:7px;background:#97734375}.header{border-bottom:3px double #7f6240;padding-bottom:14px;margin-bottom:6px}
+.brand-mark{background:radial-gradient(circle,#faedcd,#d4bc8d);border:3px double #6b5033;color:#493725;box-shadow:0 0 0 2px #dac49d}
+.brand h1{font-family:var(--serif);font-size:25px;letter-spacing:.11em;text-shadow:0 1px #fff1d7}
+.brand small{font-size:9px;color:#856a46;letter-spacing:.18em}
+.page-heading{padding-bottom:7px;border-bottom:1px solid #987a5291;position:relative}
+.page-heading:after{content:'◆';position:absolute;bottom:-8px;left:calc(50% - 7px);font-size:12px;color:#86683e;background:#eee0bb;padding:0 5px}
+.eyebrow{font-family:Georgia,serif;color:#72583b;font-size:10px;letter-spacing:.2em}
+.folio{color:#977d59}.page-title{font-size:27px;color:#30251b}
+.panel{background:radial-gradient(ellipse at 20% 10%,#fff6dc99,transparent 70%),radial-gradient(#6b4e2b0e .5px, transparent 1.1px) 0 0 / 5px 7px,#f4e6c4ed;border:3px double #92744d;box-shadow:inset 0 0 0 4px #f5e8c6,inset 0 0 0 5px #bb9f7588,0 3px 13px #58391d1c}
+.panel.corners{isolation:isolate}.panel.corners:before,.panel.corners:after{width:48px;height:48px;border:0;background:currentColor;color:#8a6d4599;opacity:.95;mask:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"%3E%3Cpath fill="black" d="M0 0h45v2H2v43H0zm7 5h31v2H7v31H5V7zM10 12c9-6 17-1 13 6-7 8-12-1-5-5-8 0-10 9-5 14 5 4 14 1 17-3-4 10-12 14-19 9-8-6-8-18-1-21"/%3E%3C/svg%3E') center / contain no-repeat}
+.panel.corners:before{left:7px;top:7px}.panel.corners:after{right:7px;bottom:7px;transform:rotate(180deg)}
+.pet-cover{grid-template-columns:124px minmax(0,1fr);gap:14px;padding:23px 15px 20px;min-height:172px}
+.portrait{width:124px;height:132px;border:5px double #80603a;outline:2px solid #e4cc9e;background:radial-gradient(ellipse at 45% 36%,#f8eac5 15%,#cdb17d 92%);box-shadow:inset 0 0 18px #53361f45,0 3px 7px #48351e22;border-radius:48% 48% 4px 4px;position:relative;overflow:hidden}
+.portrait:after{content:'';inset:0;position:absolute;pointer-events:none;background:repeating-linear-gradient(60deg,#49331b11 0 .6px,transparent 1px 3px);mix-blend-mode:multiply}
+.portrait .icon{width:100px;height:119px;stroke:#31251b;stroke-width:.95;filter:contrast(1.2)}
+.profile-head .portrait{width:88px;height:99px}.profile-head .portrait .icon{width:75px;height:93px}
+.pet-cover h2{font-size:28px}.label-plate{color:#856039;font-size:10px}
+.rule{margin:15px 2px;color:#7f633d}.rule:before,.rule:after{background:linear-gradient(to right,transparent,#9b7a4a 20%,#9b7a4a 80%,transparent);height:2px}.rule:after{transform:scaleX(-1)}
+.rule .icon{width:144px;height:28px;stroke-width:.9;flex:0 0 144px}.section-head{border-bottom:1px solid #ba9c6e99;padding-bottom:8px;margin-bottom:10px}
+.section-head h2{font-size:18px}.quick{gap:7px}.quick-btn{background:radial-gradient(#f8ecd1,#e8d5aa);border:3px double #9d7d4c;box-shadow:inset 0 0 0 3px #f0dfba,0 2px 5px #59432416;padding:13px 3px 10px}.quick-btn .icon{width:36px;height:36px;stroke:#3b2b1b;stroke-width:1.15}.quick-btn span{font-size:12px}.quick-btn:active{background:#d8c298}
+.metric{background:#f3e4c3;border:1px solid #a98c60;box-shadow:inset 0 0 0 3px #efe1bf}.metric-label{color:#684f33}.metric-label .icon{color:#523d28;stroke-width:1.2}
+.record{border-bottom:1px solid #b69c7488}.record .record-icon{color:#4c3924}.record .record-icon .icon{stroke-width:1.15;width:26px;height:26px}
+.schedule-preview,.agenda-item{background:transparent}.date-stamp{background:#e5d0a1;border:3px double #92724c}.filter{border:1px solid #ad9066;background:#f0e0bd}.filter.active{background:#604b32;color:#f7e7c5}
+.calendar,.chart-panel,.profile{background:#f3e4c5e9}.day.current{background:#dec592}.day.marked:after{background:#69492e}
+.nav{background:#e8d4aaf5;border-top:3px double #8d6b42;box-shadow:0 -3px 18px #35281b29}.nav button{color:#775b38}.nav button.active{color:#3f2c1e}.nav .icon{stroke-width:1.3;width:25px;height:25px}
+.month-btn,.pet-switch,.secondary{background:#efdbb7;border:3px double #a2845b;border-radius:0}.primary{background:#5c4832;color:#f7e7c5;border:2px solid #6a5036}
+.modal{background:radial-gradient(ellipse at 50% 0%,#fff0cb,#ecdab4);border:5px double #95774f;box-shadow:0 25px 60px #160e0999}.modal-head{border-bottom:1px solid #b5996e;padding-bottom:10px}.modal .close{border:1px solid #a28560}
+@media(max-width:380px){.pet-cover{grid-template-columns:96px minmax(0,1fr);gap:12px}.pet-cover .portrait{width:96px;height:110px}.pet-cover .portrait .icon{width:86px;height:103px}.pet-cover h2{font-size:24px}.brand h1{font-size:23px}.quick-btn .icon{width:28px;height:28px}}
+
+.engraved-frontispiece{height:82px;margin:-3px -6px 2px;color:#735b3c;opacity:.94;pointer-events:none}.engraved-frontispiece svg{width:100%;height:100%}
+
+/* Functional rebuild on the preserved engraved-paper design */
+.app{padding-bottom:calc(166px + env(safe-area-inset-bottom));overflow-x:clip}
+.header,.pet-cover,.profile-head,.modal-head{min-width:0}
+.portrait{flex:0 0 auto}
+.portrait-photo{display:block;width:100%;height:100%;object-fit:cover;filter:sepia(.22) saturate(.84) contrast(1.08);mix-blend-mode:multiply}
+.portrait:has(.portrait-photo):after{opacity:.18}
+.photo-tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 15px}
+.photo-tool{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:0;padding:10px 12px;border:3px double #9d7d4c;background:#efdfbb;color:#493624;font-size:13px;font-weight:700}
+.photo-tool svg{width:20px;height:20px;stroke-width:1.5}
+.photo-tool:disabled{opacity:.45;cursor:not-allowed}
+#portraitFile{display:none}
+.record-fab{position:fixed;z-index:16;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom));width:min(245px,calc(100% - 64px));max-width:245px;display:flex;align-items:center;justify-content:center;gap:10px;border:3px double #caa877;background:linear-gradient(180deg,#6d5236,#503a26);color:#f7e8c9;padding:11px 18px;box-shadow:0 4px 15px #4030205c;font:700 17px var(--sans)}
+.record-fab .icon{width:24px;height:24px;stroke:#fff0d1;stroke-width:1.55}
+.record-chooser{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.record-choice{display:flex;gap:10px;align-items:center;text-align:left;min-height:60px;padding:12px 10px;background:radial-gradient(#f8ecd1,#e8d5aa);border:3px double #9d7d4c;font-weight:700;font-size:16px}
+.record-choice .icon{width:32px;height:32px;stroke-width:1.35;flex:0 0 auto}
+.record-chooser .record-choice:last-child:nth-child(odd){grid-column:1/-1}
+.modal{width:min(calc(100vw - 28px),430px);max-width:430px;max-height:calc(100dvh - 50px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:18px 16px 20px}
+.modal .form,.modal .form-grid,.modal .field,.modal .btn-row{min-width:0;max-width:100%}
+.modal .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.modal .field{display:grid;gap:7px}
+.modal input,.modal select,.modal textarea{min-width:0;width:100%;max-width:100%;box-sizing:border-box}
+.modal .btn-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.modal .btn-row button{min-width:0}
+.modal-back{z-index:30}
+.nav{z-index:20}
+@media(max-width:390px){
+  .modal .form-grid{grid-template-columns:1fr}
+  .modal{padding:16px 13px}
+  .record-fab{width:min(218px,calc(100% - 60px));bottom:calc(74px + env(safe-area-inset-bottom))}
 }
 </style>
-</head>
-<body>
-<svg width="0" height="0" style="position:absolute;left:-9999px;top:-9999px" aria-hidden="true" focusable="false">
-  <symbol id="i-paw" viewBox="0 0 24 24"><path d="M12 15.5c2.8 0 5.2 1.5 5.2 3.7 0 1.1-.9 1.8-2.1 1.8H8.9c-1.2 0-2.1-.7-2.1-1.8 0-2.2 2.4-3.7 5.2-3.7Z"/><path d="M7 10.6c0 1.4-.8 2.5-1.8 2.5s-1.8-1.1-1.8-2.5.8-2.6 1.8-2.6S7 9.2 7 10.6Z"/><path d="M11 7.4c0 1.7-.9 3-2.1 3S6.8 9.1 6.8 7.4s.9-3 2.1-3 2.1 1.3 2.1 3Z"/><path d="M17.2 7.4c0 1.7-.9 3-2.1 3S13 9.1 13 7.4s.9-3 2.1-3 2.1 1.3 2.1 3Z"/><path d="M20.6 10.6c0 1.4-.8 2.5-1.8 2.5s-1.8-1.1-1.8-2.5.8-2.6 1.8-2.6 1.8 1.2 1.8 2.6Z"/></symbol>
-  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.3 12 4l9 7.3"/><path d="M6.5 10.6V20h11V10.6"/><path d="M10 20v-5.8h4V20"/></symbol>
-  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.8c0-1 .8-1.8 1.8-1.8H12v15.7H5.8A1.8 1.8 0 0 1 4 17.9V5.8Z"/><path d="M20 5.8c0-1-.8-1.8-1.8-1.8H12v15.7h6.2a1.8 1.8 0 0 0 1.8-1.8V5.8Z"/><path d="M7 8.2h3.2M7 11.2h3.2M13.8 8.2H17M13.8 11.2H17"/></symbol>
-  <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M5 6h14v13H5z"/><path d="M8 3.8v4M16 3.8v4M5 9.1h14"/><path d="M8.2 12h3M8.2 15.2h3M13 12h2.8M13 15.2h2.8"/></symbol>
-  <symbol id="i-profile" viewBox="0 0 24 24"><path d="M6 19.5c.6-3 3-4.8 6-4.8s5.4 1.9 6 4.8"/><path d="M12 12.7a3.7 3.7 0 1 0 0-7.4 3.7 3.7 0 0 0 0 7.4Z"/><path d="M4.2 3.7h15.6v16.6H4.2z"/></symbol>
-  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
-  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
-  <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
-  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M5 7.5h3l1.2-2h5.6l1.2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13.5" r="3.4"/></symbol>
-  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4 5.2v4.5h4.5"/></symbol>
-  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14"/><path d="M9 7V4.8h6V7"/><path d="M7.5 7.5 8.4 20h7.2l.9-12.5"/><path d="M10 10.4v6.8M14 10.4v6.8"/></symbol>
-  <symbol id="i-food" viewBox="0 0 24 24"><path d="M5 15h14c-.4 2.8-2.2 4.4-5 4.8H10c-2.8-.4-4.6-2-5-4.8Z"/><path d="M7 15c.2-2.6 2.4-4.2 5-4.2s4.8 1.6 5 4.2"/><path d="M8.2 9.4a5.4 5.4 0 0 1 7.6 0"/></symbol>
-  <symbol id="i-walk" viewBox="0 0 24 24"><path d="M8 18.5c.6-2.5 2.3-4.2 4.8-5.2"/><path d="M13.4 6.3a1.8 1.8 0 1 1 0 3.6 1.8 1.8 0 0 1 0-3.6Z"/><path d="M10.4 20.2 9.6 15l-2.6-1.8"/><path d="m13.6 9.8 1.9 2.1 3 .4"/><path d="m12.5 9.4-2.1 2.4 2 2.2 1 4.2"/></symbol>
-  <symbol id="i-toilet" viewBox="0 0 24 24"><path d="M6.2 7.2h11.6v9.2H6.2z"/><path d="M9 7.2V5h6v2.2"/><path d="M8.2 11.5h7.6"/><path d="M9.4 14.3h5.2"/><path d="M12 17.2v2"/></symbol>
-  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5 5 13.7a4.2 4.2 0 0 1 6-5.9l1 .9 1-.9a4.2 4.2 0 0 1 6 5.9L12 20.5Z"/><path d="M7.3 12.2h2.2l1.3-2.2 1.7 4 1.6-2h2.6"/></symbol>
-  <symbol id="i-weight" viewBox="0 0 24 24"><path d="M6 7.4A6 6 0 0 1 18 7.4v10.4H6V7.4Z"/><path d="M9.3 7.4A2.7 2.7 0 0 1 12 4.7a2.7 2.7 0 0 1 2.7 2.7"/><path d="m12 9.5 2.2 1.4"/></symbol>
-  <symbol id="i-visit" viewBox="0 0 24 24"><path d="M5 6.2h14v12.6H5z"/><path d="M12 9v6M9 12h6"/></symbol>
-  <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="16.5" r="2.5"/><path d="M8.6 9.1 19 4.8M8.6 14.9 19 19.2"/></symbol>
-  <symbol id="i-note" viewBox="0 0 24 24"><path d="M6 4.8h12v14.4H6z"/><path d="M9 8.2h6M9 11.6h6M9 15h4"/></symbol>
-  <symbol id="i-dog-portrait" viewBox="0 0 120 120"><rect x="8" y="7" width="104" height="106" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M25 105V87c0-10 7-18 17-21 2 6 8 9 18 9s16-3 18-9c10 3 17 11 17 21v18" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M60 20c13 0 25 10 25 24 0 13-11 25-25 25S35 57 35 44c0-14 12-24 25-24Z" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M39 34c-8 1-14 7-14 15 0 5 3 10 8 13M81 34c8 1 14 7 14 15 0 5-3 10-8 13" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M43 40c-6 2-11 9-11 17 0 4 1 7 4 10M77 40c6 2 11 9 11 17 0 4-1 7-4 10" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".7"/><path d="M51 47h0M69 47h0" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M56 57c2 2 6 2 8 0" fill="none" stroke="currentColor" stroke-width="2"/><path d="M60 49c3 0 5 2 5 5-2 1-8 1-10 0 0-3 2-5 5-5Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M33 28c-5 4-8 10-8 17 0 1 0 2 .2 3M87 28c5 4 8 10 8 17 0 1 0 2-.2 3" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".8"/><path d="M18 20c12 3 19 8 22 16M102 20c-12 3-19 8-22 16" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".6"/><path d="M42 80h36" stroke="currentColor" stroke-width="1.4" opacity=".7"/><path d="M42 86h36" stroke="currentColor" stroke-width="1.2" opacity=".4"/></symbol>
-  <symbol id="i-cat-portrait" viewBox="0 0 120 120"><rect x="8" y="7" width="104" height="106" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M30 99c2-13 13-22 30-22s28 9 30 22" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M60 22c16 0 28 13 28 28 0 15-12 28-28 28S32 65 32 50c0-15 12-28 28-28Z" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M41 22 31 39l14-4M79 22l10 17-14-4" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M49 49h0M71 49h0" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M60 55c3 0 5 2 5 4-3 2-7 2-10 0 0-2 2-4 5-4Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M51 61 43 64M51 64 42 66M69 61l8 3M69 64l9 2" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".8"/><path d="M44 80h32" stroke="currentColor" stroke-width="1.4" opacity=".7"/></symbol>
-</svg>
-
-<div class="app-shell">
-  <header class="header">
-    <div class="brand-wrap">
-      <div class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg></div>
-      <div>
-        <div class="brand-title">Companion Ledger</div>
-        <div class="brand-sub">Pet Health Journal</div>
-      </div>
-    </div>
-    <button class="picker-btn" id="petPickerBtn" type="button"><span id="headerPetName">こむぎ</span><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
-  </header>
-
-  <main>
-    <section class="page active" id="page-home">
-      <div class="page-kicker" id="dateLabel">NOVEMBER 23, 2026</div>
-      <h1 class="page-title">今日の記録</h1>
-      <div class="rule"><span class="diamond"></span></div>
-      <div class="frontispiece" aria-hidden="true">
-        <svg viewBox="0 0 760 180">
-          <g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M50 134c52-46 88-61 146-63 41-1 77 10 112 27 28 14 37 13 64 0 34-17 70-28 111-27 57 2 93 17 145 63"/>
-            <path d="M76 146c42-25 72-36 120-37 46-1 78 7 114 23 30 13 49 13 78 0 36-16 68-24 114-23 48 1 78 12 120 37"/>
-            <path d="M109 86c20-8 32-22 38-42 15 26 35 38 61 40"/>
-            <path d="M228 78c17 20 35 31 60 35"/>
-            <path d="M472 78c-17 20-35 31-60 35"/>
-            <path d="M651 86c-20-8-32-22-38-42-15 26-35 38-61 40"/>
-            <path d="M380 39c0 25 13 32 13 44 0 8-6 14-13 14s-13-6-13-14c0-12 13-19 13-44Z"/>
-            <path d="M380 56c-14 0-22 7-22 18 0 18 15 22 22 22 8 0 23-4 23-22 0-11-8-18-23-18Z"/>
-            <path d="M380 96v23"/>
-            <path d="M380 119c-12 0-23 6-29 16 17-4 42-4 58 0-6-10-17-16-29-16Z"/>
-            <path d="M306 110c13 0 24 8 27 19-15-2-39-2-53 0 4-11 14-19 26-19Z"/>
-            <path d="M454 110c-13 0-24 8-27 19 15-2 39-2 53 0-4-11-14-19-26-19Z"/>
-            <path d="M145 83c-16 15-29 17-45 16 12-14 19-27 20-41 9 15 17 21 25 25Z"/>
-            <path d="M615 83c16 15 29 17 45 16-12-14-19-27-20-41-9 15-17 21-25 25Z"/>
-            <path d="M194 108c11 12 26 19 45 20-10-14-13-27-10-39-12 8-24 13-35 19Z"/>
-            <path d="M566 108c-11 12-26 19-45 20 10-14 13-27 10-39 12 8 24 13 35 19Z"/>
-          </g>
-          <g fill="none" stroke="currentColor" stroke-width="1.2" opacity=".55">
-            <path d="M120 58c10 15 18 22 29 29"/><path d="M640 58c-10 15-18 22-29 29"/>
-            <path d="M280 132c10 8 20 12 30 13"/><path d="M480 132c-10 8-20 12-30 13"/>
-            <path d="M380 25c-7 7-11 16-11 24"/><path d="M380 25c7 7 11 16 11 24"/>
-          </g>
-        </svg>
-      </div>
-
-      <div class="panel card">
-        <div class="hero-card">
-          <div class="frame portrait-frame"><div class="portrait-inner" id="homePortrait"></div></div>
-          <div>
-            <h2 class="pet-name" id="heroName">こむぎ</h2>
-            <div class="pet-meta" id="heroMeta"></div>
-            <div class="stat-grid">
-              <div class="stat-box">
-                <div class="stat-label">最新の体重</div>
-                <div class="stat-value" id="latestWeight">4.2<span>kg</span></div>
-                <div class="entry-sub" id="weightDate">11月23日</div>
-              </div>
-              <div class="stat-box">
-                <div class="stat-label">今日のおさんぽ</div>
-                <div class="stat-value" id="walkToday">25<span>分</span></div>
-                <div class="entry-sub">合計時間</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="section-head">
-        <h3 class="section-title">予定</h3>
-        <button type="button" class="section-action" id="addScheduleInlineBtn"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>追加</button>
-      </div>
-      <div class="panel" id="homeUpcoming"></div>
-    </section>
-
-    <section class="page" id="page-records">
-      <h1 class="page-title">記録帳</h1>
-      <div class="rule"><span class="diamond"></span></div>
-      <div class="filter-row" id="recordFilters"></div>
-
-      <div class="section-head">
-        <h3 class="section-title" style="font-size:24px">体重の推移</h3>
-        <button type="button" class="section-action" id="recordAddTopBtn"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>記録</button>
-      </div>
-      <div class="panel chart-card">
-        <svg class="chart" id="weightChart" viewBox="0 0 360 180" aria-label="体重グラフ"></svg>
-        <div class="chart-foot"><span>過去</span><span>最新</span></div>
-      </div>
-
-      <div class="section-head">
-        <h3 class="section-title">記録一覧</h3>
-        <button type="button" class="section-action" id="recordAddListBtn"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>追加</button>
-      </div>
-      <div class="panel" id="recordList"></div>
-    </section>
-
-    <section class="page" id="page-schedule">
-      <h1 class="page-title">予定帳</h1>
-      <div class="rule"><span class="diamond"></span></div>
-      <div class="panel calendar-card">
-        <div class="calendar-head">
-          <button type="button" class="icon-square" id="prevMonthBtn"><svg class="icon" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
-          <div class="month-title" id="calendarLabel">2026年11月</div>
-          <button type="button" class="icon-square" id="nextMonthBtn"><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
-        </div>
-        <div class="calendar-grid" id="calendarGrid"></div>
-      </div>
-      <div class="section-head">
-        <h3 class="section-title">予定一覧</h3>
-        <button type="button" class="section-action" id="scheduleAddBtn"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>追加</button>
-      </div>
-      <div class="panel" id="scheduleList"></div>
-    </section>
-
-    <section class="page" id="page-profile">
-      <h1 class="page-title">うちの子</h1>
-      <div class="rule"><span class="diamond"></span></div>
-      <div class="panel card">
-        <div class="hero-card">
-          <div class="frame portrait-frame"><div class="portrait-inner" id="profilePortrait"></div></div>
-          <div>
-            <h2 class="pet-name" id="profileName">こむぎ</h2>
-            <div class="pet-meta" id="profileBreed">トイプードル / 4歳</div>
-            <div class="pet-actions">
-              <button type="button" class="mini-btn" id="photoSetBtn"><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg>写真を設定</button>
-              <button type="button" class="mini-btn" id="photoResetBtn"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg>初期に戻す</button>
-              <button type="button" class="mini-btn" id="profileEditBtn"><svg class="icon" aria-hidden="true"><use href="#i-note"/></svg>編集</button>
-            </div>
-            <input type="file" id="photoInput" accept="image/*">
-          </div>
-        </div>
-        <div class="profile-grid" id="profileInfo"></div>
-      </div>
-      <div class="section-head">
-        <h3 class="section-title">ペット</h3>
-        <button type="button" class="section-action" id="petAddBtn"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>追加</button>
-      </div>
-      <div class="panel" id="petList"></div>
-    </section>
-  </main>
-</div>
-
-<nav class="nav" aria-label="メインメニュー">
-  <button type="button" class="fab" id="fabRecordBtn"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>記録する</button>
-  <div class="nav-bar">
-    <button type="button" class="nav-btn active" data-page="home"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg><span>ホーム</span></button>
-    <button type="button" class="nav-btn" data-page="records"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg><span>記録帳</span></button>
-    <button type="button" class="nav-btn" data-page="schedule"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg><span>予定帳</span></button>
-    <button type="button" class="nav-btn" data-page="profile"><svg class="icon" aria-hidden="true"><use href="#i-profile"/></svg><span>うちの子</span></button>
-  </div>
-</nav>
-
-<div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-head">
-      <div class="modal-title" id="modalTitle"></div>
-      <button type="button" class="modal-close" id="modalCloseBtn">×</button>
-    </div>
-    <div id="modalBody"></div>
-  </div>
-</div>
-<div class="toast" id="toast"></div>
-
+</head><body>
+<!-- Original line-art icon system: all paths hand-authored for this project -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" style="position:absolute;overflow:hidden"><defs>
+<pattern id="eg-cross" width="3.6" height="3.6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><path d="M0 0V3.6" fill="none" stroke="#493424" stroke-width=".58" opacity=".8"/></pattern>
+<pattern id="eg-fine" width="2.4" height="2.4" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)"><path d="M0 0V2.4" fill="none" stroke="#57432f" stroke-width=".38" opacity=".7"/></pattern>
+<pattern id="eg-cross2" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(65)"><path d="M0 0V3" fill="none" stroke="#493424" stroke-width=".38" opacity=".55"/></pattern>
+<pattern id="eg-gold-hatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V3" fill="none" stroke="#947349" stroke-width=".45"/></pattern>
+<!-- Consistent engraved object emblems, designed for this interface -->
+<symbol id="i-paw" viewBox="0 0 32 32"><path d="M15.8 17.2c-2.5 0-4.9 4-6.6 6.3-1.4 2.5.1 4.5 2.6 4.5 1.3 0 2.6-.7 4-.7 1.6 0 2.7.7 4 .7 2.5 0 4-2 2.6-4.5-1.7-2.3-4.1-6.3-6.6-6.3Z" fill="url(#eg-cross)"/><path d="M8.5 16.9c-2.9-4-5.5-2.9-5 0 .5 2.4 3.4 3.8 5 1.9m3-6.4c-2.5-4.3-5.2-3.1-4.8 0 .4 3 3.6 4.2 4.8 0m8.3 0c1.2-4.2 4.4-3 4.8 0 .4 3.1-2.3 4.3-4.8 0m7.9 6.4c1.6-1.9 4.5-.5 5-1.9.5-2.9-2.1-4-5 0"/><path d="M10 25.8c3-1 9-1 12 0" stroke-width=".6" opacity=".55"/></symbol>
+<symbol id="i-bowl" viewBox="0 0 32 32"><path d="M3.4 16.6h25.2l-3.8 10.8H7.3z" fill="url(#eg-cross)"/><path d="M3 16.5h26M7 27.7h18M8.5 14.2c3-2.1 5-2.1 7.4 0 2.4-2.1 4.3-2.1 7.2-.3M10 12.1l1-5.5 4.8 2.9 4.4-3 1.3 5.4"/><path d="M9 22h14M8.3 25h15.6" stroke-width=".6"/><circle cx="12" cy="12" r=".7"/><circle cx="20" cy="12" r=".7"/></symbol>
+<symbol id="i-leash" viewBox="0 0 32 32"><path d="M21 5c4.9-.2 7.2 5.2 4.9 9.5-1.9 3.4-5.5 4.7-8.6 2.3"/><path d="M21.6 7.2c2.7 0 4.1 3.1 2.4 5.9-1.6 2.6-4 3.2-6.4 1.4"/><path d="M17.3 16.8C14.3 19.6 11.5 22 7.6 24.2l-2.1-1.3-2.5 3.5 2.5 2.4 3.1-2.2L8 24.3"/><path d="M18 18.2c-2 4.3-2.4 6.5-1.6 8.8l2.3 1.2 1.6-2.3-1.7-1.1m-2.2.5 3.3 1.8" fill="url(#eg-fine)"/><path d="M13.4 21.3l3.1 2m-6 0 3.1 2" stroke-width=".5"/></symbol>
+<symbol id="i-toilet" viewBox="0 0 32 32"><path d="M6 15.5c1.2-4.2 6.8-5.3 9.3-1.3 1.7-4 7-4.5 9.2-1.1 2.4 3.7 3.8 7.9 1.6 12.2H6.3c-2.3-3.9-2.1-7.8-.3-9.8Z" fill="url(#eg-fine)"/><path d="M6.3 25.3h19.8M7.5 22.3h17M9.6 18.7c2.3-.6 4.6.3 5.4 1.5m5.3-2.4c-1.7.4-2.8 1.6-3.4 2.5M13.5 8.5c0-1.5 1.3-3 2.4-4.3m4.1 5.6c1.1-2.3 2.7-3 4.3-3.8"/></symbol>
+<symbol id="i-heart" viewBox="0 0 32 32"><path d="M16 27.5C10.2 23 4.3 18.4 4.3 12.9c0-6.1 7.7-8.4 11.7-2.4 4-6 11.7-3.7 11.7 2.4 0 5.5-5.9 10.1-11.7 14.6Z" fill="url(#eg-cross)"/><path d="M7.8 15.3h4.8l2.2-4.1 3.1 9.6 2-5.5h4.1" stroke="#342d27" stroke-width="1.7"/><path d="M9 11.8c1.3-2 3-2.2 4.4-.9" stroke-width=".6"/></symbol>
+<symbol id="i-scale" viewBox="0 0 32 32"><rect x="4.1" y="4.2" width="23.8" height="24" rx="1.3" fill="url(#eg-fine)"/><rect x="8" y="8" width="16" height="10" rx=".7" fill="#f2e7d3"/><path d="M16 14l4-3M16 15v2M10 23h12M7 26h18M9.5 10l1.5 2M23 10l-1.5 2"/><path d="M10 20h12" stroke-width=".6"/></symbol>
+<symbol id="i-book" viewBox="0 0 32 32"><path d="M16 7C12 4 7 4 3 5v21c4-1 9-1 13 2 4-3 9-3 13-2V5c-4-1-9-1-13 2Z" fill="url(#eg-gold-hatch)"/><path d="M16 7v21M7 10h6m-6 4h6m-6 4h6m7-8h6m-6 4h6m-6 4h6"/><path d="M10 2v6" stroke-width=".6"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 32 32"><rect x="3" y="6" width="26" height="23" rx="1" fill="url(#eg-gold-hatch)"/><path d="M9 3v6M23 3v6M3 13h26M9 18h4m6 0h4M9 23h4m6 0h4"/><circle cx="23" cy="23" r="2" fill="#f2e7d3"/></symbol>
+<symbol id="i-user" viewBox="0 0 32 32"><path d="M16 4c-4 0-7 4-7 8s3 7 7 7 7-3 7-7-3-8-7-8Z" fill="url(#eg-fine)"/><path d="M4 29c0-7 4.8-10.5 12-10.5S28 22 28 29Z" fill="url(#eg-gold-hatch)"/><path d="M7 27h18m-14-4h10" stroke-width=".5"/></symbol>
+<symbol id="i-cross" viewBox="0 0 32 32"><path d="M12 3h8v9h9v8h-9v9h-8v-9H3v-8h9z" fill="url(#eg-cross)"/></symbol>
+<symbol id="i-pill" viewBox="0 0 32 32"><g transform="rotate(42 16 16)"><rect x="9" y="2" width="14" height="28" rx="7" fill="url(#eg-fine)"/><path d="M9 16h14M12 6h8"/></g></symbol>
+<symbol id="i-scissors" viewBox="0 0 32 32"><circle cx="8" cy="24" r="4" fill="url(#eg-fine)"/><circle cx="19" cy="24" r="4" fill="url(#eg-fine)"/><path d="M10 21 26 4m-7 17L5 4m13 4 8-4"/></symbol>
+<symbol id="i-plant" viewBox="0 0 32 32"><path d="M16 30V3M16 25C7 26 4 21 4 16c6-1 11 2 12 9ZM16 18c9-1 12-6 12-12-7 0-11 5-12 12ZM16 30c7 0 11-3 12-8-6-1-10 2-12 8Z" fill="url(#eg-fine)"/><path d="M16 23 7 18M16 17l9-8M16 29l8-4" stroke-width=".6"/></symbol>
+<!-- Original companion portraits engraved from curved linework and cross-hatching -->
+<symbol id="i-dog" viewBox="0 0 100 110">
+<g stroke="#372719" stroke-linejoin="round" stroke-linecap="round">
+<!-- soft clipped ear locks -->
+<path d="M28 34C14 28 5 35 8 49c-8 8-1 14 1 18-5 10 4 17 11 16 3 10 15 7 19 0L35 45Zm44 0c14-6 23 1 20 15 8 8 1 14-1 18 5 10-4 17-11 16-3 10-15 7-19 0L65 45Z" fill="url(#eg-cross)" stroke-width="1.3"/>
+<path d="M9 46c7-6 10-8 15-4m-16 11c7-7 13-6 17-3M9 64c8-7 14-6 16-2m-8 14c7-7 14-8 17-4m57-26c-7-6-10-8-15-4m16 11c-7-7-13-6-17-3m16 14c-8-7-14-6-16-2m8 14c-7-7-14-8-17-4" fill="none" stroke-width=".6"/>
+<!-- crown tuft and original poodle head -->
+<path d="M23 38c-5-10 4-18 10-18 1-8 10-12 17-8 7-4 16 0 17 8 6 0 15 8 10 18l-6 18c2 12-4 32-21 35-17-3-23-23-21-35Z" fill="#f5e7c4" stroke-width="1.4"/>
+<path d="M23 38c-3-12 6-19 14-16 1-8 9-9 13-6 4-3 12-2 13 6 8-3 17 4 14 16l-6 7c-5-6-8-16-21-17-13 1-16 11-21 17Z" fill="url(#eg-fine)" stroke-width=".7"/>
+<path d="M25 33c5-5 10-6 16-4m-10-9c5 1 7 3 7 7m1-11c3 1 6 3 6 7m7-9c5 1 6 5 6 8m6-4c2 3 2 5 2 8m5-6c6 1 8 5 9 10m-40 4c3-4 7-5 12-5m10 0c5 0 9 1 12 5" stroke-width=".65" fill="none"/>
+<!-- eyes and rounded muzzle -->
+<path d="M30 51c4-4 10-4 15-1m10 0c5-3 11-3 15 1" stroke-width="1.1" fill="none"/>
+<ellipse cx="39" cy="53" rx="2.3" ry="2.5" fill="#302317"/><ellipse cx="61" cy="53" rx="2.3" ry="2.5" fill="#302317"/>
+<path d="M36 61c-7 0-12 8-10 17 2 10 11 11 24 11s22-1 24-11c2-9-3-17-10-17-3 3-8 4-14 4s-11-1-14-4Z" fill="url(#eg-gold-hatch)" stroke-width=".7"/>
+<path d="M42 68c4-2 12-2 16 0l-4 6h-8z" fill="#302317" stroke-width=".7"/><path d="M50 74v4m0 0c-4 4-9 3-13-1m13 1c4 4 9 3 13-1" stroke-width=".9" fill="none"/>
+<path d="M22 86c-7 7-8 16-8 22h72c0-6-1-15-8-22-9 7-16 11-28 11s-19-4-28-11Z" fill="url(#eg-cross)" stroke-width="1"/>
+<path d="M19 96c20 12 42 12 62 0M22 103c20 8 36 8 56 0" fill="none" stroke-width=".5"/>
+<!-- engraved fur stipples -->
+<path d="M29 44l-3 4m5-8-3 5m42-5 3 5m-1 2 3 4M34 72l-4 6m6-5-3 6m31-6 3 6m-1-7 4 6" stroke-width=".48" fill="none"/>
+</g></symbol>
+<symbol id="i-cat" viewBox="0 0 100 110"><g stroke="#392c20" stroke-linecap="round" stroke-linejoin="round">
+<path d="M23 47 17 10l29 17h8l29-17-6 37c13 24 5 43-27 48-32-5-40-24-27-48Z" fill="#f3ead6" stroke-width="1.5"/>
+<path d="M23 44 20 16l20 17m37 11 3-28-20 17" fill="url(#eg-cross)" stroke-width=".8"/>
+<path d="M27 49c10-17 36-17 46 0l3 11c0 14-11 24-26 24S24 74 24 60Z" fill="url(#eg-fine)" stroke-width=".7"/>
+<path d="M28 58c7-6 13-5 18 0m8 0c5-5 11-6 18 0" fill="none" stroke-width="1.4"/>
+<ellipse cx="37" cy="58" rx="2.6" ry="3.2" fill="#392c20"/><ellipse cx="63" cy="58" rx="2.6" ry="3.2" fill="#392c20"/>
+<path d="M44 69h12l-6 6z" fill="#392c20"/><path d="M50 75v5m0 0c-4 4-8 3-11 0m11 0c4 4 8 3 11 0" fill="none" stroke-width="1.1"/>
+<path d="M24 70 6 66m18 9L5 77m71-7 18-4m-18 9 19 2" stroke-width=".7"/>
+<path d="M27 84c-6 6-8 17-8 24h62c0-7-2-18-8-24-10 10-35 10-46 0Z" fill="url(#eg-cross)"/>
+</g></symbol>
+<symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 4 7 8-7 8"/></symbol><symbol id="i-left" viewBox="0 0 24 24"><path d="m15 4-7 8 7 8"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5"/></symbol>
+<!-- Engraved flourishes, scrolls and border corners -->
+<symbol id="i-scroll" viewBox="0 0 200 38"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M4 19c16-14 27-14 36-3 9 11-2 16-12 10C18 18 29 4 44 9c20 7 22 14 42 10 5-1 10-6 14-10 4 4 9 9 14 10 20 4 22-3 42-10 15-5 26 9 16 17-10 6-21 1-12-10 9-11 20-11 36 3"/><path d="M9 19h49m84 0h49M72 19l10-10m46 10-10-10" stroke-width=".55"/><path d="M100 4c-7 4-9 8-7 12l7 7 7-7c2-4 0-8-7-12Zm0 19c-3 3-4 6 0 10 4-4 3-7 0-10Z" fill="url(#eg-fine)"/><path d="M54 19c-4-5-9-5-14-3 4 5 8 7 14 3Zm92 0c4-5 9-5 14-3-4 5-8 7-14 3Z" fill="url(#eg-fine)"/></g></symbol>
+<symbol id="i-frame-corner" viewBox="0 0 68 68"><g fill="none" stroke="currentColor" stroke-width=".9"><path d="M65 3H19C8 3 3 8 3 19v46M57 8H20C12 8 8 12 8 20v37M65 14H29C19 14 14 19 14 29v36"/><path d="M19 4c-2 10 9 16 15 10-8-1-13 6-12 12 6-2 12-7 15-13M5 19c10-2 16 9 10 15-1-8 6-13 12-12-2 6-7 12-13 15" fill="url(#eg-gold-hatch)"/><circle cx="22" cy="22" r="4"/><circle cx="22" cy="22" r="1.3" fill="currentColor"/></g></symbol>
+</defs></svg>
+<div class="app"><header class="header"><div class="brand"><div class="brand-mark"><svg class="icon"><use href="#i-paw"/></svg></div><div><h1>しっぽ綴り</h1></div></div><button id="petSwitch" class="pet-switch"><span id="headerPet">こむぎ</span><svg class="icon"><use href="#i-chevron"/></svg></button></header>
+<section id="home" class="page active"><div class="page-heading"><div><div class="eyebrow" id="dateLabel">NOVEMBER 23</div><h2 class="page-title">今日の記録</h2></div></div><div class="engraved-frontispiece" aria-hidden="true">
+<svg viewBox="0 0 392 105" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+<defs><pattern id="fp-etch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(26)"><path d="M0 0V3" stroke="#735734" stroke-width=".5" opacity=".9"/></pattern></defs>
+<g stroke="#664c2c" fill="none" stroke-width="1.2">
+<path d="M2 88C20 52 30 45 58 46c-22 0-30-11-22-26 9-14 25-3 19 7-7 8-14-1-6-5M390 88c-18-36-28-43-56-42 22 0 30-11 22-26-9-14-25-3-19 7 7 8 14-1 6-5"/>
+<path d="M1 97c45-15 83-17 123-13 30 3 46 8 72 8s42-5 72-8c40-4 78-2 123 13M0 101c63-8 111-5 167-1h58c56-4 104-7 167 1" stroke-width=".7"/>
+<path d="M7 53C33 46 55 24 83 26c-16 15-31 19-49 18M385 53c-26-7-48-29-76-27 16 15 31 19 49 18"/>
+<path d="M93 46C120 21 165 24 196 36c31-12 76-15 103 10M93 51c27-17 63-20 103-5 40-15 76-12 103 5" stroke-width=".7"/>
+<path d="M196 19c-14-18-28-14-24-1 5 12 20 8 24 1 4 7 19 11 24-1 4-13-10-17-24 1ZM196 20v48"/>
+<path d="M160 66c-15-24-25-22-38-14 6 12 18 18 38 14Zm72 0c15-24 25-22 38-14-6 12-18 18-38 14Z" fill="url(#fp-etch)"/>
+<path d="M196 76c-10-8-16-15-16-24 9 0 14 6 16 24 2-18 7-24 16-24 0 9-6 16-16 24Z" fill="url(#fp-etch)"/>
+<path d="M52 70c18-18 40-18 52-6-20 2-34 5-52 6Zm288 0c-18-18-40-18-52-6 20 2 34 5 52 6Z" fill="url(#fp-etch)"/>
+</g>
+<g fill="#6b4e2d"><circle cx="196" cy="18" r="3"/><circle cx="196" cy="4" r="1.7"/><circle cx="184" cy="10" r="1.5"/><circle cx="208" cy="10" r="1.5"/></g></svg></div><div class="panel corners pet-cover"><div class="portrait" id="heroPortrait" role="img" aria-label="ペットの肖像"><svg class="icon"><use href="#i-dog"/></svg></div><div><h2 id="heroName">こむぎ</h2><div class="pet-meta" id="heroMeta"></div></div></div><div class="rule" aria-hidden="true"><svg class="icon"><use href="#i-scroll"/></svg></div><div class="section-head"><h2>記録する</h2></div><div class="quick"><button class="quick-btn" data-record="food"><svg class="icon"><use href="#i-bowl"/></svg><span>ごはん</span></button><button class="quick-btn" data-record="walk"><svg class="icon"><use href="#i-leash"/></svg><span>散歩</span></button><button class="quick-btn" data-record="toilet"><svg class="icon"><use href="#i-toilet"/></svg><span>トイレ</span></button><button class="quick-btn" data-record="condition"><svg class="icon"><use href="#i-heart"/></svg><span>体調</span></button></div><div class="metrics"><div class="metric"><div class="metric-label"><svg class="icon"><use href="#i-scale"/></svg>最新体重</div><div class="metric-value" id="latestWeight">—<span>kg</span></div><div class="metric-sub" id="weightDate"></div></div><div class="metric"><div class="metric-label"><svg class="icon"><use href="#i-leash"/></svg>今日の散歩</div><div class="metric-value" id="walkToday">0<span>分</span></div><div class="metric-sub">合計</div></div></div><div class="section-head"><h2>今日の履歴</h2><button class="action-link" data-tab="records">すべて見る</button></div><div class="panel record-list" id="homeRecords"></div><div class="section-head"><h2>次の予定</h2><button class="action-link" data-tab="schedule">予定を見る</button></div><div class="panel" id="homeUpcoming"></div></section>
+<section id="records" class="page"><div class="page-heading"><div><h2 class="page-title">記録帳</h2></div></div><div class="filters" id="filters"><button class="filter active" data-filter="all">すべて</button><button class="filter" data-filter="weight">体重</button><button class="filter" data-filter="food">ごはん</button><button class="filter" data-filter="walk">散歩</button><button class="filter" data-filter="toilet">トイレ</button><button class="filter" data-filter="condition">体調</button></div><div class="panel chart-panel"><div class="chart-head"><h3>体重の推移</h3><button class="action-link" data-record="weight">＋ 記録</button></div><svg class="chart" id="weightChart" viewBox="0 0 320 142" role="img" aria-label="体重の推移"></svg><div class="chart-foot"><span>過去</span><span>最新</span></div></div><div class="section-head"><h2>記録一覧</h2><button class="action-link" data-record="food">＋ 追加</button></div><div class="panel record-list" id="allRecords"></div></section>
+<section id="schedule" class="page"><div class="page-heading"><div><h2 class="page-title">予定帳</h2></div></div><div class="panel calendar"><div class="month-head"><button id="prevMonth" class="month-btn" aria-label="前月"><svg class="icon"><use href="#i-left"/></svg></button><strong id="monthLabel"></strong><button id="nextMonth" class="month-btn" aria-label="翌月"><svg class="icon"><use href="#i-chevron"/></svg></button></div><div class="days" id="calendarDays"></div></div><div class="section-head"><h2>予定一覧</h2><button class="action-link" id="addSchedule">＋ 追加</button></div><div class="agenda" id="scheduleItems"></div></section>
+<section id="profile" class="page"><div class="page-heading"><div><h2 class="page-title">うちの子</h2></div></div><div class="panel profile"><div class="profile-head"><div class="portrait" id="profilePortrait" role="img" aria-label="ペットの肖像"><svg class="icon"><use href="#i-dog"/></svg></div><div><h2 id="profileName"></h2><p class="pet-meta" id="profileBreed"></p></div></div><div class="photo-tools"><button type="button" class="photo-tool" id="choosePortrait"><svg class="icon"><use href="#i-user"/></svg>写真を設定</button><button type="button" class="photo-tool" id="resetPortrait"><svg class="icon"><use href="#i-paw"/></svg>初期に戻す</button></div><input type="file" id="portraitFile" accept="image/*" aria-label="ペットの写真を選択"><div id="profileInfo"></div><button class="secondary" id="editPet">プロフィールを編集</button></div><div class="section-head"><h2>ペットの切り替え</h2><button class="action-link" id="addPet">＋ 追加</button></div><div class="panel pet-rows" id="petRows"></div><p class="small-note">記録はこの端末のブラウザに保存されます。</p></section></div>
+<nav class="nav" aria-label="画面切り替え"><button class="active" data-tab="home"><svg class="icon"><use href="#i-paw"/></svg><span>ホーム</span></button><button data-tab="records"><svg class="icon"><use href="#i-book"/></svg><span>記録帳</span></button><button data-tab="schedule"><svg class="icon"><use href="#i-calendar"/></svg><span>予定帳</span></button><button data-tab="profile"><svg class="icon"><use href="#i-user"/></svg><span>うちの子</span></button></nav>
+<button type="button" class="record-fab" id="recordFab"><svg class="icon"><use href="#i-book"/></svg>記録する</button>
+<div id="modalBack" class="modal-back"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h2 id="modalTitle"></h2><button class="close" id="closeModal" aria-label="閉じる"><svg class="icon"><use href="#i-close"/></svg></button></div><div id="modalContent"></div></div></div><div class="toast" id="toast" role="status"></div>
 <script>
-(() => {
-  const STORAGE_KEY = 'companion-ledger-v2';
-  const typeMeta = {
-    all:{label:'すべて',icon:'i-note'},
-    weight:{label:'体重',icon:'i-weight'},
-    food:{label:'ごはん',icon:'i-food'},
-    walk:{label:'散歩',icon:'i-walk'},
-    toilet:{label:'トイレ',icon:'i-toilet'},
-    condition:{label:'体調',icon:'i-heart'},
-    visit:{label:'通院',icon:'i-visit'},
-    grooming:{label:'お手入れ',icon:'i-scissors'},
-    schedule:{label:'予定',icon:'i-calendar'}
-  };
-  const $ = (id) => document.getElementById(id);
-  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const todayISO = (offset=0) => {
-    const d = new Date();
-    d.setHours(0,0,0,0);
-    d.setDate(d.getDate()+offset);
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  };
-  const nowTime = () => {
-    const d = new Date();
-    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-  };
-  const fmtDate = (iso) => {
-    if (!iso) return '未設定';
-    const [y,m,d] = iso.split('-');
-    return `${Number(m)}月${Number(d)}日`;
-  };
-  const fmtDateLong = (iso) => {
-    if (!iso) return '未登録';
-    const [y,m,d] = iso.split('-');
-    return `${y}年${Number(m)}月${Number(d)}日`;
-  };
-  const ageText = (birthday) => {
-    if (!birthday) return '';
-    const b = new Date(`${birthday}T00:00:00`);
-    const n = new Date();
-    let age = n.getFullYear() - b.getFullYear();
-    if (n.getMonth() < b.getMonth() || (n.getMonth()===b.getMonth() && n.getDate() < b.getDate())) age--;
-    return `${age}歳`;
-  };
-  const svgUse = (id) => `<svg class="icon" aria-hidden="true"><use href="#${id}"/></svg>`;
-  const renderDefaultPortrait = (kind='dog') => `<svg class="portrait-figure" aria-hidden="true"><use href="#${kind === 'cat' ? 'i-cat-portrait':'i-dog-portrait'}"/></svg>`;
-  const renderPortrait = (pet) => pet.photo ? `<img class="portrait-photo" src="${pet.photo}" alt="${esc(pet.name)}の写真">` : renderDefaultPortrait(pet.kind);
-  const defaultData = () => ({
-    activePetId: 1,
-    pets: [
-      {id:1,name:'こむぎ',kind:'dog',breed:'トイプードル',sex:'女の子',birthday:'2022-05-15',allergy:'なし',note:'ささみが好き。お散歩は公園コース。',photo:''},
-      {id:2,name:'もふ',kind:'dog',breed:'ウェルシュ・コーギー',sex:'男の子',birthday:'2021-09-02',allergy:'鶏肉を少し控えめ',note:'ボール遊びが好き。',photo:''}
-    ],
-    records: [
-      {id:1,petId:1,type:'food',value:'朝ごはん',note:'完食',date:todayISO(),time:'08:00'},
-      {id:2,petId:1,type:'walk',value:'25',note:'公園を一周',date:todayISO(),time:'09:20'},
-      {id:3,petId:1,type:'condition',value:'元気',note:'食欲あり',date:todayISO(),time:'10:00'},
-      {id:4,petId:1,type:'weight',value:'4.2',note:'',date:todayISO(-1),time:'08:00'},
-      {id:5,petId:1,type:'weight',value:'4.1',note:'',date:todayISO(-8),time:'08:00'},
-      {id:6,petId:1,type:'weight',value:'4.0',note:'',date:todayISO(-15),time:'08:00'},
-      {id:7,petId:1,type:'toilet',value:'通常',note:'問題なし',date:todayISO(),time:'11:00'}
-    ],
-    schedules: [
-      {id:101,petId:1,type:'visit',title:'健康診断',memo:'かかりつけの動物病院',date:todayISO(7)},
-      {id:102,petId:1,type:'grooming',title:'トリミング',memo:'予約確認',date:todayISO(18)}
-    ]
-  });
-  let state = load();
-  let currentPage = 'home';
-  let currentFilter = 'all';
-  let calendarBase = new Date();
-  calendarBase.setDate(1);
-
-  function load(){
-    try{const raw = localStorage.getItem(STORAGE_KEY); if(!raw) return defaultData(); const parsed = JSON.parse(raw); if(!parsed?.pets) return defaultData(); return parsed;}catch{return defaultData();}
-  }
-  function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  function toast(msg){ const el=$('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('show'),2000); }
-  function pet(){ return state.pets.find(p=>p.id===state.activePetId) || state.pets[0]; }
-  function records(petId=state.activePetId){ return state.records.filter(r=>r.petId===petId).sort((a,b)=>`${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`)); }
-  function schedules(petId=state.activePetId){ return state.schedules.filter(s=>s.petId===petId).sort((a,b)=>a.date.localeCompare(b.date)); }
-  function recordLabel(rec){ return rec.type==='walk' ? `${rec.value}分` : rec.type==='weight' ? `${rec.value}kg` : rec.value; }
-  function setPage(page){ currentPage=page; document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active', el.id===`page-${page}`)); document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active', el.dataset.page===page)); window.scrollTo({top:0,behavior:'smooth'}); }
-  function modal(title, bodyHtml){ $('modalTitle').textContent=title; $('modalBody').innerHTML=bodyHtml; $('modalBackdrop').classList.add('show'); $('modalBackdrop').setAttribute('aria-hidden','false'); const focusable = $('modalBody').querySelector('input,select,textarea,button'); if(focusable) setTimeout(()=>focusable.focus({preventScroll:true}),30); }
-  function closeModal(){ $('modalBackdrop').classList.remove('show'); $('modalBackdrop').setAttribute('aria-hidden','true'); }
-
-  function renderHome(){
-    const p = pet();
-    const all = records();
-    const today = all.filter(r=>r.date===todayISO());
-    const latestWeight = all.find(r=>r.type==='weight');
-    const walkMinutes = today.filter(r=>r.type==='walk').reduce((sum, r)=>sum + (Number(r.value)||0), 0);
-    const next = schedules().find(s=>s.date>=todayISO());
-    $('dateLabel').textContent = new Intl.DateTimeFormat('en-US', {month:'long', day:'numeric', year:'numeric'}).format(new Date()).toUpperCase();
-    $('headerPetName').textContent = p.name;
-    $('heroName').textContent = p.name;
-    $('heroMeta').textContent = [p.breed, ageText(p.birthday)].filter(Boolean).join(' / ');
-    $('homePortrait').innerHTML = renderPortrait(p);
-    $('latestWeight').innerHTML = latestWeight ? `${esc(latestWeight.value)}<span>kg</span>` : `—<span>kg</span>`;
-    $('weightDate').textContent = latestWeight ? fmtDate(latestWeight.date) : '未記録';
-    $('walkToday').innerHTML = `${walkMinutes}<span>分</span>`;
-    $('homeUpcoming').innerHTML = next ? `
-      <div class="schedule-preview">
-        <div class="date-pill"><strong>${Number(next.date.slice(8))}</strong><small>${Number(next.date.slice(5,7))}月</small></div>
-        <div><div class="entry-title">${esc(next.title)}</div><div class="entry-sub">${esc(next.memo || typeMeta[next.type]?.label || '')}</div></div>
-        <div class="list-icon">${svgUse(typeMeta[next.type]?.icon || 'i-calendar')}</div>
-      </div>` : `<div class="empty">予定はありません</div>`;
-  }
-  function renderRecordFilters(){
-    $('recordFilters').innerHTML = ['all','weight','food','walk','toilet','condition'].map(type=>`<button type="button" class="record-chip ${currentFilter===type?'active':''}" data-filter="${type}">${svgUse(typeMeta[type].icon)}<span>${typeMeta[type].label}</span></button>`).join('');
-  }
-  function recordsHTML(rows){
-    if(!rows.length) return `<div class="empty">記録はありません</div>`;
-    return rows.map(r=>`<div class="record-row"><div class="list-icon">${svgUse(typeMeta[r.type].icon)}</div><div><div class="entry-title">${esc(typeMeta[r.type].label)}・${esc(recordLabel(r))}</div><div class="entry-sub">${esc(r.note || '')}</div></div><div style="display:grid;justify-items:end;gap:2px"><div class="entry-meta">${fmtDate(r.date)}<br>${esc(r.time)}</div><button type="button" class="delete-btn" data-del-record="${r.id}" aria-label="記録を削除">${svgUse('i-trash')}</button></div></div>`).join('');
-  }
-  function drawChart(){
-    const svg = $('weightChart'); svg.innerHTML='';
-    const data = records().filter(r=>r.type==='weight').reverse().slice(-7);
-    if(!data.length){ svg.innerHTML='<text x="180" y="96" text-anchor="middle" fill="#7d6d5d" font-size="14">体重記録がありません</text>'; return; }
-    const values = data.map(d=>Number(d.value));
-    const min = Math.min(...values), max=Math.max(...values), pad=max===min?0.8:Math.max(0.2,(max-min)*0.45);
-    const yMin=min-pad,yMax=max+pad; const W=360,H=180,left=28,right=20,top=18,bottom=32,plotW=W-left-right,plotH=H-top-bottom;
-    const x = i => left + (data.length===1 ? plotW/2 : plotW*i/(data.length-1));
-    const y = v => top + ((yMax-v)/(yMax-yMin))*plotH;
-    const make = (tag, attrs, text) => { const el=document.createElementNS('http://www.w3.org/2000/svg',tag); Object.entries(attrs||{}).forEach(([k,v])=>el.setAttribute(k,v)); if(text!=null) el.textContent=text; svg.appendChild(el); return el; };
-    [0, .33, .66, 1].forEach(t=>{ const yy = top + plotH*t; make('line',{x1:left,y1:yy,x2:W-right,y2:yy,stroke:'#d6c7af','stroke-dasharray':'4 6'}); });
-    const path = data.map((d,i)=>`${i?'L':'M'} ${x(i)} ${y(Number(d.value))}`).join(' ');
-    make('path',{d:path,fill:'none',stroke:'#576c5b','stroke-width':'4','stroke-linecap':'round','stroke-linejoin':'round'});
-    data.forEach((d,i)=>{ make('circle',{cx:x(i),cy:y(Number(d.value)),r:'6',fill:'#f8f1e3',stroke:'#576c5b','stroke-width':'3'}); make('text',{x:x(i),y:H-10,'text-anchor':'middle',fill:'#7d6d5d','font-size':'11'}, `${Number(d.date.slice(5,7))}/${Number(d.date.slice(8))}`); });
-    const last=data[data.length-1];
-    make('text',{x:W-right-4,y:34,'text-anchor':'end',fill:'#576c5b','font-size':'18','font-weight':'700'}, `${last.value} kg`);
-  }
-  function renderRecords(){
-    renderRecordFilters();
-    drawChart();
-    const filtered = currentFilter==='all' ? records() : records().filter(r=>r.type===currentFilter);
-    $('recordList').innerHTML = recordsHTML(filtered);
-  }
-  function renderCalendar(){
-    const y = calendarBase.getFullYear(), m = calendarBase.getMonth();
-    $('calendarLabel').textContent = `${y}年 ${m+1}月`;
-    const grid = $('calendarGrid');
-    const week = ['月','火','水','木','金','土','日'];
-    grid.innerHTML = week.map(w=>`<div class="wk">${w}</div>`).join('');
-    const first = new Date(y,m,1); const offset=(first.getDay()+6)%7; const start = new Date(y,m,1-offset); const markSet = new Set(schedules().map(s=>s.date));
-    for(let i=0;i<35;i++){
-      const d = new Date(start); d.setDate(start.getDate()+i); const iso=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; const classes=['day'];
-      if(d.getMonth()!==m) classes.push('out'); if(iso===todayISO()) classes.push('today'); if(markSet.has(iso)) classes.push('has');
-      grid.insertAdjacentHTML('beforeend', `<div class="${classes.join(' ')}">${d.getDate()}</div>`);
-    }
-  }
-  function renderSchedules(){
-    renderCalendar();
-    const rows = schedules();
-    $('scheduleList').innerHTML = rows.length ? rows.map(s=>`<div class="event-row"><div class="date-pill"><strong>${Number(s.date.slice(8))}</strong><small>${Number(s.date.slice(5,7))}月</small></div><div><div class="entry-title">${esc(s.title)}</div><div class="entry-sub">${esc(s.memo || '')}</div></div><div style="display:grid;justify-items:end;gap:4px"><div class="list-icon">${svgUse(typeMeta[s.type]?.icon || 'i-calendar')}</div><button type="button" class="delete-btn" data-del-schedule="${s.id}" aria-label="予定を削除">${svgUse('i-trash')}</button></div></div>`).join('') : '<div class="empty">予定はありません</div>';
-  }
-  function renderProfile(){
-    const p = pet();
-    $('profilePortrait').innerHTML = renderPortrait(p);
-    $('profileName').textContent = p.name;
-    $('profileBreed').textContent = [p.breed, ageText(p.birthday)].filter(Boolean).join(' / ');
-    $('profileInfo').innerHTML = [
-      ['誕生日', fmtDateLong(p.birthday)],
-      ['性別', p.sex || '未登録'],
-      ['アレルギー', p.allergy || 'なし'],
-      ['メモ', p.note || '—']
-    ].map(([label,val])=>`<div class="profile-line"><div class="profile-label">${label}</div><div class="profile-value">${esc(val)}</div></div>`).join('');
-    $('petList').innerHTML = state.pets.map(q=>`<button type="button" class="pet-row" data-pet="${q.id}"><div><div class="entry-title">${esc(q.name)}</div><small>${esc([q.breed, ageText(q.birthday)].filter(Boolean).join(' / '))}</small></div><div class="badge">${q.id===state.activePetId ? '表示中' : '切替'}</div></button>`).join('');
-  }
-  function renderAll(){ renderHome(); renderRecords(); renderSchedules(); renderProfile(); }
-
-  function openRecordChooser(){
-    modal('記録する', `<div class="action-grid">${['food','walk','toilet','condition','weight'].map(type=>`<button type="button" class="action-card" data-record-type="${type}">${svgUse(typeMeta[type].icon)}<span>${typeMeta[type].label}</span></button>`).join('')}</div>`);
-    document.querySelectorAll('[data-record-type]').forEach(btn=>btn.addEventListener('click',()=>openRecordForm(btn.dataset.recordType)));
-  }
-  function openRecordForm(type='food'){
-    const presets = {food:['内容','朝ごはん'],walk:['時間（分）','25'],toilet:['状態','通常'],condition:['状態','元気'],weight:['体重（kg）','4.2']};
-    modal('記録を追加', `
-      <form id="recordForm">
-        <div class="form-grid">
-          <div class="field full"><label>種類</label><select name="type" id="recordType">${['food','walk','toilet','condition','weight'].map(t=>`<option value="${t}">${typeMeta[t].label}</option>`).join('')}</select></div>
-          <div class="field full"><label id="recordValueLabel">内容</label><input type="text" name="value" id="recordValue" required maxlength="40"></div>
-          <div class="field"><label>日付</label><input type="date" name="date" value="${todayISO()}" required></div>
-          <div class="field"><label>時刻</label><input type="time" name="time" value="${nowTime()}" required></div>
-          <div class="field full"><label>メモ（任意）</label><textarea name="note"></textarea></div>
-        </div>
-        <div class="form-actions"><button type="button" class="secondary-btn" id="cancelRecordBtn">キャンセル</button><button type="submit" class="primary-btn">保存</button></div>
-      </form>`);
-    const typeEl = $('recordType'); const valueLabel = $('recordValueLabel'); const valueInput = $('recordValue');
-    function syncPreset(){ valueLabel.textContent = presets[typeEl.value][0]; valueInput.placeholder = presets[typeEl.value][1]; valueInput.value = presets[typeEl.value][1]; }
-    typeEl.value = type; syncPreset(); typeEl.addEventListener('change', syncPreset);
-    $('cancelRecordBtn').onclick = closeModal;
-    $('recordForm').onsubmit = (e)=>{ e.preventDefault(); const fd = new FormData(e.currentTarget); state.records.unshift({id:Date.now(),petId:state.activePetId,type:String(fd.get('type')),value:String(fd.get('value')).trim(),note:String(fd.get('note')).trim(),date:String(fd.get('date')),time:String(fd.get('time'))}); save(); closeModal(); renderAll(); toast('記録を追加したよ'); setPage('records'); };
-  }
-  function openScheduleForm(){
-    modal('予定を追加', `
-      <form id="scheduleForm">
-        <div class="form-grid">
-          <div class="field full"><label>種類</label><select name="type"><option value="visit">通院</option><option value="grooming">お手入れ</option></select></div>
-          <div class="field full"><label>予定名</label><input name="title" required maxlength="40" placeholder="例：健康診断"></div>
-          <div class="field full"><label>日付</label><input type="date" name="date" value="${todayISO(7)}" required></div>
-          <div class="field full"><label>メモ（任意）</label><textarea name="memo"></textarea></div>
-        </div>
-        <div class="form-actions"><button type="button" class="secondary-btn" id="cancelScheduleBtn">キャンセル</button><button type="submit" class="primary-btn">保存</button></div>
-      </form>`);
-    $('cancelScheduleBtn').onclick = closeModal;
-    $('scheduleForm').onsubmit = (e)=>{ e.preventDefault(); const fd = new FormData(e.currentTarget); state.schedules.push({id:Date.now(),petId:state.activePetId,type:String(fd.get('type')),title:String(fd.get('title')).trim(),memo:String(fd.get('memo')).trim(),date:String(fd.get('date'))}); save(); closeModal(); renderAll(); toast('予定を追加したよ'); setPage('schedule'); };
-  }
-  function openPetForm(editMode=true){
-    const p = editMode ? pet() : {name:'',kind:'dog',breed:'',sex:'',birthday:'',allergy:'',note:'',photo:''};
-    modal(editMode ? 'プロフィールを編集' : 'ペットを追加', `
-      <form id="petForm">
-        <div class="form-grid">
-          <div class="field full"><label>名前</label><input name="name" value="${esc(p.name)}" required maxlength="24"></div>
-          <div class="field"><label>種類</label><select name="kind"><option value="dog">犬</option><option value="cat">猫</option></select></div>
-          <div class="field"><label>犬種・猫種</label><input name="breed" value="${esc(p.breed)}" maxlength="32"></div>
-          <div class="field"><label>誕生日</label><input type="date" name="birthday" value="${esc(p.birthday)}"></div>
-          <div class="field"><label>性別</label><input name="sex" value="${esc(p.sex)}" maxlength="16"></div>
-          <div class="field full"><label>アレルギー</label><input name="allergy" value="${esc(p.allergy)}" maxlength="40"></div>
-          <div class="field full"><label>メモ</label><textarea name="note">${esc(p.note)}</textarea></div>
-        </div>
-        <div class="form-actions"><button type="button" class="secondary-btn" id="cancelPetBtn">キャンセル</button><button type="submit" class="primary-btn">保存</button></div>
-      </form>`);
-    $('petForm').kind.value = p.kind;
-    $('cancelPetBtn').onclick = closeModal;
-    $('petForm').onsubmit = (e)=>{ e.preventDefault(); const fd = new FormData(e.currentTarget); const payload={name:String(fd.get('name')).trim(),kind:String(fd.get('kind')),breed:String(fd.get('breed')).trim(),sex:String(fd.get('sex')).trim(),birthday:String(fd.get('birthday')).trim(),allergy:String(fd.get('allergy')).trim(),note:String(fd.get('note')).trim()}; if(editMode){ const idx = state.pets.findIndex(x=>x.id===state.activePetId); state.pets[idx] = {...state.pets[idx], ...payload}; }else{ const id=Date.now(); state.pets.push({id,photo:'',...payload}); state.activePetId=id; } save(); closeModal(); renderAll(); toast(editMode ? 'プロフィールを更新したよ':'ペットを追加したよ'); setPage('profile'); };
-  }
-  function openPetPicker(){
-    modal('ペットを選ぶ', `<div class="panel">${state.pets.map(q=>`<button type="button" class="pet-row" data-pick-pet="${q.id}"><div><div class="entry-title">${esc(q.name)}</div><small>${esc(q.breed || '')}</small></div><div class="badge">${q.id===state.activePetId?'表示中':'選択'}</div></button>`).join('')}</div><div class="form-actions"><button type="button" class="secondary-btn" id="pickerCloseBtn">閉じる</button><button type="button" class="primary-btn" id="pickerAddBtn">ペットを追加</button></div>`);
-    document.querySelectorAll('[data-pick-pet]').forEach(btn=>btn.addEventListener('click',()=>{ state.activePetId = Number(btn.dataset.pickPet); save(); closeModal(); renderAll(); toast('表示するペットを切り替えたよ'); }));
-    $('pickerCloseBtn').onclick = closeModal; $('pickerAddBtn').onclick = ()=>openPetForm(false);
-  }
-  function handlePhotoUpload(file){
-    if(!file) return; const reader = new FileReader(); reader.onload = () => { const idx = state.pets.findIndex(p=>p.id===state.activePetId); state.pets[idx].photo = String(reader.result); save(); renderAll(); toast('写真を設定したよ'); }; reader.readAsDataURL(file);
-  }
-
-  function bind(){
-    document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)));
-    $('petPickerBtn').onclick = openPetPicker;
-    $('fabRecordBtn').onclick = openRecordChooser;
-    $('recordAddTopBtn').onclick = openRecordChooser;
-    $('recordAddListBtn').onclick = openRecordChooser;
-    $('scheduleAddBtn').onclick = openScheduleForm;
-    $('addScheduleInlineBtn').onclick = openScheduleForm;
-    $('profileEditBtn').onclick = ()=>openPetForm(true);
-    $('petAddBtn').onclick = ()=>openPetForm(false);
-    $('photoSetBtn').onclick = ()=>$('photoInput').click();
-    $('photoResetBtn').onclick = ()=>{ const idx=state.pets.findIndex(p=>p.id===state.activePetId); state.pets[idx].photo=''; save(); renderAll(); toast('初期の肖像に戻したよ'); };
-    $('photoInput').addEventListener('change', (e)=>handlePhotoUpload(e.target.files?.[0]));
-    $('prevMonthBtn').onclick = ()=>{ calendarBase.setMonth(calendarBase.getMonth()-1); renderSchedules(); };
-    $('nextMonthBtn').onclick = ()=>{ calendarBase.setMonth(calendarBase.getMonth()+1); renderSchedules(); };
-    $('recordFilters').addEventListener('click', (e)=>{ const btn=e.target.closest('[data-filter]'); if(!btn) return; currentFilter=btn.dataset.filter; renderRecords(); });
-    $('petList').addEventListener('click', (e)=>{ const btn=e.target.closest('[data-pet]'); if(!btn) return; state.activePetId=Number(btn.dataset.pet); save(); renderAll(); toast('表示するペットを切り替えたよ'); });
-    $('recordList').addEventListener('click', (e)=>{ const btn=e.target.closest('[data-del-record]'); if(!btn) return; state.records = state.records.filter(r=>r.id!==Number(btn.dataset.delRecord)); save(); renderAll(); toast('記録を削除したよ'); });
-    $('scheduleList').addEventListener('click', (e)=>{ const btn=e.target.closest('[data-del-schedule]'); if(!btn) return; state.schedules = state.schedules.filter(s=>s.id!==Number(btn.dataset.delSchedule)); save(); renderAll(); toast('予定を削除したよ'); });
-    $('modalCloseBtn').onclick = closeModal;
-    $('modalBackdrop').addEventListener('click', (e)=>{ if(e.target=== $('modalBackdrop')) closeModal(); });
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
-  }
-
-  bind();
-  renderAll();
+(()=>{'use strict';
+const KEY='shippo-tsuzuri-v1',names={food:'ごはん',walk:'散歩',toilet:'トイレ',condition:'体調',weight:'体重',visit:'通院',vaccine:'予防接種',medicine:'お薬',grooming:'トリミング',other:'その他'},glyphs={food:'bowl',walk:'leash',toilet:'toilet',condition:'heart',weight:'scale',visit:'cross',vaccine:'cross',medicine:'pill',grooming:'scissors',other:'calendar'};
+const $=id=>document.getElementById(id);const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));const ico=id=>`<svg class="icon"><use href="#i-${id}"/></svg>`;const stamp=(offset=0)=>{const d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};const clock=()=>new Date().toTimeString().slice(0,5);const fmt=d=>{const p=String(d||'').split('-');return p.length===3?`${Number(p[1])}/${Number(p[2])}`:'—'};const human=d=>{const p=String(d||'').split('-');return p.length===3?`${p[0]}年${Number(p[1])}月${Number(p[2])}日`:'未登録'};const init=()=>({activePetId:1,pets:[{id:1,kind:'dog',name:'こむぎ',breed:'トイプードル',sex:'女の子',birthday:'2022-05-15',allergy:'なし',note:''}],records:[{id:11,petId:1,type:'weight',value:'4.2',note:'',date:stamp(-1),time:'08:00'},{id:12,petId:1,type:'weight',value:'4.1',note:'',date:stamp(-7),time:'08:00'},{id:13,petId:1,type:'weight',value:'4.0',note:'',date:stamp(-14),time:'08:00'},{id:14,petId:1,type:'food',value:'朝ごはん',note:'完食',date:stamp(),time:'08:15'},{id:15,petId:1,type:'walk',value:'25',note:'',date:stamp(),time:'09:30'},{id:16,petId:1,type:'condition',value:'元気',note:'',date:stamp(),time:'10:00'}],schedules:[{id:21,petId:1,type:'visit',title:'動物病院',memo:'健康診断',date:stamp(10)}]});
+let state;try{
+const prior=localStorage.getItem(KEY);
+const upgraded=localStorage.getItem('companion-ledger-v2');
+state=JSON.parse(prior||upgraded);
+if(!state||!Array.isArray(state.pets)||!state.pets.length||!Array.isArray(state.records)||!Array.isArray(state.schedules))state=init();
+}catch{state=init()}
+if(!state.pets.some(p=>p.id===state.activePetId))state.activePetId=state.pets[0].id;
+let filter='all',month=new Date();month.setDate(1);
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch{notice('保存に失敗しました')}};const pet=()=>state.pets.find(p=>p.id===state.activePetId)||state.pets[0];const entries=()=>state.records.filter(r=>r.petId===state.activePetId).sort((a,b)=>(b.date+' '+(b.time||'')).localeCompare(a.date+' '+(a.time||'')));const events=()=>state.schedules.filter(r=>r.petId===state.activePetId).sort((a,b)=>a.date.localeCompare(b.date));const age=b=>{if(!b)return '年齢未登録';const d=new Date(b+'T00:00:00'),n=new Date();let a=n.getFullYear()-d.getFullYear();if(n.getMonth()<d.getMonth()||n.getMonth()===d.getMonth()&&n.getDate()<d.getDate())a--;return a>=0?a+'歳':'未登録'};const animal=p=>p.kind==='cat'?'cat':'dog';
+function notice(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(notice.timer);notice.timer=setTimeout(()=>$('toast').classList.remove('show'),1800)}
+function tab(id){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));scrollTo({top:0,behavior:'smooth'})}
+function modal(title,html){$('modalTitle').textContent=title;$('modalContent').innerHTML=html;$('modalBack').classList.add('visible');const focus=$('modalContent').querySelector('input,select');if(focus)focus.focus({preventScroll:true})}function close(){$('modalBack').classList.remove('visible')}
+function format(r){return r.type==='weight'?`${esc(r.value)} kg`:r.type==='walk'?`${esc(r.value)} 分`:esc(r.value)}
+function recordsHTML(arr){return arr.length?arr.map(r=>`<div class="record"><div class="record-icon">${ico(glyphs[r.type]||'book')}</div><div class="record-main"><strong>${names[r.type]||'記録'} · ${format(r)}</strong>${r.note?`<p>${esc(r.note)}</p>`:''}</div><div class="record-date">${fmt(r.date)}<br>${esc(r.time||'')}<br><button class="delete-btn" data-remove-record="${r.id}" aria-label="記録を削除">${ico('trash')}</button></div></div>`).join(''):'<div class="empty">記録はまだありません</div>'}
+function portraitHTML(p){
+if(typeof p.photo==='string'&&/^data:image\/(jpeg|png|webp);base64,/i.test(p.photo))return `<img class="portrait-photo" src="${p.photo}" alt="${esc(p.name)}の写真">`;
+return ico(animal(p));
+}
+function renderHome(){const p=pet(),rows=entries(),today=rows.filter(x=>x.date===stamp()),w=rows.find(x=>x.type==='weight'),walk=today.filter(x=>x.type==='walk').reduce((n,x)=>n+(Number(x.value)||0),0),next=events().find(x=>x.date>=stamp());$('dateLabel').textContent=new Intl.DateTimeFormat('en-US',{month:'long',day:'numeric',year:'numeric'}).format(new Date()).toUpperCase();$('headerPet').textContent=p.name;$('heroName').textContent=p.name;$('heroMeta').textContent=[p.breed,age(p.birthday)].filter(Boolean).join(' / ');$('heroPortrait').innerHTML=portraitHTML(p);$('latestWeight').innerHTML=w?`${esc(w.value)}<span>kg</span>`:'—<span>kg</span>';$('weightDate').textContent=w?fmt(w.date):'未記録';$('walkToday').innerHTML=`${walk}<span>分</span>`;$('homeRecords').innerHTML=recordsHTML(today.slice(0,3));$('homeUpcoming').innerHTML=next?`<div class="schedule-preview"><div class="date-stamp"><strong>${Number(next.date.slice(8))}</strong><small>${Number(next.date.slice(5,7))}月</small></div><div><div class="preview-title">${esc(next.title)}</div><div class="preview-sub">${esc(next.memo||names[next.type]||'予定')}</div></div>${ico(glyphs[next.type]||'calendar')}</div>`:'<div class="empty">予定はありません</div>'}
+function chart(){const data=entries().filter(r=>r.type==='weight'&&Number(r.value)>0).reverse().slice(-7),s=$('weightChart');s.textContent='';const ns='http://www.w3.org/2000/svg',element=(tag,attrs,value)=>{const e=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(value!=null)e.textContent=value;s.append(e);return e};[38,72,106].forEach(y=>element('line',{x1:16,x2:308,y1:y,y2:y,stroke:'#dbceba','stroke-dasharray':'3 4'}));if(!data.length){element('text',{x:160,y:80,fill:'#786e62','font-size':12,'text-anchor':'middle'},'体重の記録はありません');return}const vals=data.map(x=>Number(x.value)),lo=Math.min(...vals),hi=Math.max(...vals),padding=Math.max((hi-lo)*.35,.25),y=v=>113-(v-(lo-padding))/(hi-lo+2*padding)*83,x=i=>data.length===1?160:22+280*i/(data.length-1),coords=data.map((d,i)=>`${x(i)},${y(Number(d.value))}`).join(' ');if(data.length>1)element('polyline',{points:coords,fill:'none',stroke:'#566752','stroke-width':2.4,'stroke-linecap':'round'});data.forEach((d,i)=>{element('circle',{cx:x(i),cy:y(Number(d.value)),r:3.7,stroke:'#566752',fill:'#f7f0e2','stroke-width':2});element('text',{x:x(i),y:132,fill:'#786e62','font-size':9,'text-anchor':'middle'},fmt(d.date))});element('text',{x:304,y:20,fill:'#566752','text-anchor':'end','font-size':14,'font-weight':'bold'},vals.at(-1)+' kg')}
+function renderRecords(){const arr=entries();$('allRecords').innerHTML=recordsHTML(filter==='all'?arr:arr.filter(r=>r.type===filter));document.querySelectorAll('.filter').forEach(e=>e.classList.toggle('active',e.dataset.filter===filter));chart()}
+function calendar(){const y=month.getFullYear(),m=month.getMonth();$('monthLabel').textContent=`${y}年 ${m+1}月`;const parent=$('calendarDays');parent.innerHTML=['月','火','水','木','金','土','日'].map(x=>`<div class="weekday">${x}</div>`).join('');let start=new Date(y,m,1),offset=(start.getDay()+6)%7;const days=new Date(y,m+1,0).getDate(),count=Math.ceil((offset+days)/7)*7,marked=new Set(events().map(x=>x.date));for(let i=0;i<count;i++){const d=new Date(y,m,i-offset+1),dt=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-'),klass=['day'];if(d.getMonth()!==m)klass.push('other');if(dt===stamp())klass.push('current');if(marked.has(dt))klass.push('marked');parent.insertAdjacentHTML('beforeend',`<div class="${klass.join(' ')}">${d.getDate()}</div>`)}}
+function renderSchedule(){calendar();$('scheduleItems').innerHTML=events().length?events().map(r=>`<div class="panel agenda-item"><div class="date-stamp"><strong>${Number(r.date.slice(8))}</strong><small>${Number(r.date.slice(5,7))}月</small></div><div><div class="entry-title">${esc(r.title)}</div><div class="entry-note">${esc(r.memo||names[r.type]||'')}</div></div><button class="delete-btn" data-remove-event="${r.id}" aria-label="予定を削除">${ico('trash')}</button></div>`).join(''):'<div class="panel empty">予定はありません</div>'}
+function renderProfile(){const p=pet();$('profilePortrait').innerHTML=portraitHTML(p);$('resetPortrait').disabled=!p.photo;$('profileName').textContent=p.name;$('profileBreed').textContent=p.breed||'種類未登録';$('profileInfo').innerHTML=[['誕生日',human(p.birthday)],['性別',p.sex||'未登録'],['アレルギー',p.allergy||'未登録'],['メモ',p.note||'—']].map(x=>`<div class="profile-field"><span>${x[0]}</span><span>${esc(x[1])}</span></div>`).join('');$('petRows').innerHTML=state.pets.map(q=>`<button class="pet-row" data-pet="${q.id}"><div><strong>${esc(q.name)}</strong><small>${esc(q.breed||'')}</small></div>${q.id===state.activePetId?'<span class="micro">表示中</span>':ico('chevron')}</button>`).join('')}
+function render(){renderHome();renderRecords();renderSchedule();renderProfile()}
+const presets={food:['内容','朝ごはん',false],walk:['時間（分）','25',true],toilet:['状態','通常',false],condition:['状態','元気',false],weight:['体重（kg）','4.2',true]};
+function openRecordChooser(){
+const types=['food','walk','toilet','condition','weight'];
+modal('記録する',`<div class="record-chooser">${types.map(t=>`<button type="button" class="record-choice" data-choose-record="${t}">${ico(glyphs[t])}<span>${names[t]}</span></button>`).join('')}</div>`);
+$('modalContent').querySelectorAll('[data-choose-record]').forEach(b=>b.onclick=()=>addRecord(b.dataset.chooseRecord));
+}
+function addRecord(type='food'){modal('記録を追加',`<form id="recordForm" class="form"><label class="field">種類<select id="recordType" name="type">${['food','walk','toilet','condition','weight'].map(t=>`<option value="${t}">${names[t]}</option>`).join('')}</select></label><label class="field"><span id="valueLabel">内容</span><input name="value" id="valueInput" required maxlength="70"></label><div class="form-grid"><label class="field">日付<input name="date" type="date" value="${stamp()}" required></label><label class="field">時刻<input name="time" type="time" value="${clock()}"></label></div><label class="field">メモ（任意）<textarea name="note" maxlength="400"></textarea></label><div class="btn-row"><button type="button" class="secondary" id="cancelForm">キャンセル</button><button class="primary" type="submit">保存</button></div></form>`);const select=$('recordType'),input=$('valueInput');select.value=type;function refresh(){const [name,val,numeric]=presets[select.value];$('valueLabel').textContent=name;input.type=numeric?'number':'text';input.value=val;if(numeric){input.min='0.01';input.step=select.value==='weight'?'0.01':'1'}else{input.removeAttribute('min');input.removeAttribute('step')}}select.onchange=refresh;refresh();$('cancelForm').onclick=close;$('recordForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),v=String(f.get('value')).trim(),t=f.get('type');if(!v)return;if((t==='weight'||t==='walk')&&(!(Number(v)>0)||!Number.isFinite(Number(v)))){notice('正しい数値を入力してください');return}state.records.push({id:Date.now(),petId:state.activePetId,type:t,value:v,note:String(f.get('note')||'').trim(),date:f.get('date'),time:f.get('time')});save();close();render();notice('保存しました')}}
+function addEvent(){modal('予定を追加',`<form id="eventForm" class="form"><label class="field">種類<select name="type"><option value="visit">通院</option><option value="medicine">お薬</option><option value="vaccine">予防接種</option><option value="grooming">トリミング</option><option value="other">その他</option></select></label><label class="field">予定名<input name="title" required maxlength="70" placeholder="例：健康診断"></label><label class="field">日付<input name="date" type="date" value="${stamp(7)}" required></label><label class="field">メモ（任意）<textarea name="memo" maxlength="400"></textarea></label><div class="btn-row"><button type="button" class="secondary" id="cancelForm">キャンセル</button><button class="primary" type="submit">保存</button></div></form>`);$('cancelForm').onclick=close;$('eventForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);state.schedules.push({id:Date.now(),petId:state.activePetId,type:f.get('type'),title:String(f.get('title')).trim(),date:f.get('date'),memo:String(f.get('memo')||'').trim()});save();close();render();notice('予定を保存しました')}}
+function editPet(isNew=false){const p=isNew?{name:'',kind:'dog',breed:'',birthday:'',sex:'',allergy:'',note:''}:pet();modal(isNew?'ペットを追加':'プロフィールを編集',`<form id="petForm" class="form"><label class="field">名前<input name="name" required maxlength="40" value="${esc(p.name)}"></label><div class="form-grid"><label class="field">種類<select name="kind"><option value="dog">犬</option><option value="cat">猫</option></select></label><label class="field">犬種・猫種<input name="breed" maxlength="80" value="${esc(p.breed)}"></label></div><div class="form-grid"><label class="field">誕生日<input type="date" name="birthday" value="${esc(p.birthday)}"></label><label class="field">性別<input name="sex" maxlength="25" value="${esc(p.sex)}"></label></div><label class="field">アレルギー<input name="allergy" maxlength="160" value="${esc(p.allergy||'')}"></label><label class="field">メモ<textarea name="note" maxlength="400">${esc(p.note||'')}</textarea></label><div class="btn-row"><button type="button" class="secondary" id="cancelForm">キャンセル</button><button class="primary" type="submit">保存</button></div></form>`);$('petForm').elements.kind.value=p.kind;$('cancelForm').onclick=close;$('petForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),data={name:String(f.get('name')).trim(),kind:f.get('kind'),breed:String(f.get('breed')).trim(),birthday:f.get('birthday'),sex:String(f.get('sex')).trim(),allergy:String(f.get('allergy')).trim(),note:String(f.get('note')).trim()};if(isNew){data.id=Date.now();state.pets.push(data);state.activePetId=data.id}else Object.assign(p,data);save();close();render();notice('保存しました')}}
+async function setPortraitPhoto(file){
+if(!file)return;
+if(!file.type.startsWith('image/')){notice('画像を選んでください');return;}
+if(file.size>18*1024*1024){notice('18MB以下の画像を選んでください');return;}
+const src=URL.createObjectURL(file);
+try{
+  const img=new Image();
+  await new Promise((ok,no)=>{img.onload=ok;img.onerror=()=>no(new Error('image'));img.src=src;});
+  const canvas=document.createElement('canvas');
+  canvas.width=480;canvas.height=530;
+  const cx=canvas.getContext('2d');
+  cx.fillStyle='#ede0c6';cx.fillRect(0,0,480,530);
+  const ratio=Math.max(480/img.naturalWidth,530/img.naturalHeight);
+  const w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;
+  cx.drawImage(img,(480-w)/2,(530-h)/2,w,h);
+  const url=canvas.toDataURL('image/jpeg',.76);
+  const p=pet(),before=p.photo||'';
+  p.photo=url;
+  try{localStorage.setItem(KEY,JSON.stringify(state));render();notice('写真を設定しました');}
+  catch(e){p.photo=before;notice('保存容量が不足しています');}
+}catch(e){notice('写真を読み込めませんでした')}
+finally{URL.revokeObjectURL(src);$('portraitFile').value='';}
+}
+function resetPortraitPhoto(){
+  const p=pet();if(!p.photo)return;
+  const before=p.photo;p.photo='';
+  try{localStorage.setItem(KEY,JSON.stringify(state));render();notice('デフォルトの肖像に戻しました');}
+  catch(e){p.photo=before;notice('保存に失敗しました')}
+}
+function removeRecord(id){if(!confirm('この記録を削除しますか？'))return;state.records=state.records.filter(x=>x.id!==id);save();render();notice('削除しました')}function removeEvent(id){if(!confirm('この予定を削除しますか？'))return;state.schedules=state.schedules.filter(x=>x.id!==id);save();render();notice('削除しました')}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-tab],[data-record],[data-filter],[data-pet],[data-remove-record],[data-remove-event]');if(!t)return;if(t.dataset.tab)tab(t.dataset.tab);else if(t.dataset.record)addRecord(t.dataset.record);else if(t.dataset.filter){filter=t.dataset.filter;renderRecords()}else if(t.dataset.pet){state.activePetId=Number(t.dataset.pet);save();render();tab('home')}else if(t.dataset.removeRecord)removeRecord(Number(t.dataset.removeRecord));else if(t.dataset.removeEvent)removeEvent(Number(t.dataset.removeEvent))});$('addSchedule').onclick=addEvent;$('editPet').onclick=()=>editPet();$('addPet').onclick=()=>editPet(true);$('petSwitch').onclick=()=>tab('profile');$('prevMonth').onclick=()=>{month.setMonth(month.getMonth()-1);renderSchedule()};$('nextMonth').onclick=()=>{month.setMonth(month.getMonth()+1);renderSchedule()};$('recordFab').onclick=openRecordChooser;
+$('choosePortrait').onclick=()=>$('portraitFile').click();
+$('resetPortrait').onclick=resetPortraitPhoto;
+$('portraitFile').addEventListener('change',e=>setPortraitPhoto(e.target.files?.[0]));
+$('closeModal').onclick=close;$('modalBack').onclick=e=>{if(e.target===$('modalBack'))close()};document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});render();
 })();
-</script>
-</body>
-</html>
+</script></body></html>
